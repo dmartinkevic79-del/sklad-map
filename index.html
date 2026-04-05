@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Интерактивная карта камер склада</title>
+    <style>
+        body { margin: 0; background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; }
+        .map-container { position: relative; display: inline-block; margin-top: 20px; border: 1px solid #444; }
+        .map-img { display: block; max-width: 100%; height: auto; }
+        
+        /* Стиль прозрачного кружка */
+        .camera-btn {
+            position: absolute; width: 12px; height: 12px;
+            background: rgba(255, 255, 255, 0.1); border: 2px solid #2a02da00;
+            border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%);
+            transition: 0.2s; z-index: 10;
+        }
+        .camera-btn:hover { 
+            background: rgba(255, 193, 7, 0.8); border-color: #fff; 
+            transform: translate(-50%, -50%) scale(1.5); 
+        }
+
+        /* Всплывающая подсказка с названием */
+        .camera-btn::after {
+            content: attr(data-name); position: absolute; bottom: 15px; left: 50%;
+            transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white;
+            padding: 2px 6px; border-radius: 4px; font-size: 10px; white-space: nowrap;
+            display: none; pointer-events: none;
+        }
+        .camera-btn:hover::after { display: block; }
+    </style>
+</head>
+<body>
+
+    <h2>Управление системой видеонаблюдения</h2>
+
+    <div class="map-container" id="wrapper">
+        <img src="Sklad.png" class="map-img" id="mainImg">
+    </div>
+
+    <script>
+        const cameraData = [
+            // === БЛОК 1-4: ЗОНЫ ПОГРУЗКИ (ВОРОТА) ===
+            { "name": "Ворота 118", "left": "8.5%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486370?q=118" },
+            { "name": "Ворота 117", "left": "11%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486386?q=117" },
+            { "name": "Ворота 116", "left": "14.1%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486383?q=116" },
+            { "name": "Ворота 115", "left": "17%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486374?q=115" },
+            { "name": "Ворота 114", "left": "19.9%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486376?q=114" },
+            { "name": "Ворота 113", "left": "22.8%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486373?q=113" },
+            { "name": "Ворота 112", "left": "25.4%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486368?q=112" },
+            { "name": "Ворота 111", "left": "28.4%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489885" },
+            { "name": "Стол старших 1", "left": "30.9%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489885" },
+            { "name": "Ворота 110", "left": "53.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466275?q=110" },
+            { "name": "Ворота 109", "left": "56.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466274?q=109" },
+            { "name": "Ворота 108", "left": "59%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466271?q=108" },
+            { "name": "Ворота 107", "left": "61.9%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466273?q=107" },
+            { "name": "Ворота 106", "left": "64.9%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466276?q=106" },
+            { "name": "Ворота 105", "left": "67.6%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466277?q=105" },
+            { "name": "Ворота 104", "left": "70.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466278?q=104" },
+            { "name": "Ворота 103", "left": "73.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471461?q=103" },
+            { "name": "Ворота 102", "left": "76.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471486?q=102" },
+            { "name": "Стол старших приемки", "left": "79%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471492?q=стол" },
+            { "name": "Ворота 119", "left": "5.2%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443407?q=119" },
+            { "name": "Ворота 120", "left": "8.2%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484897" },
+            { "name": "Ворота 121", "left": "11.4%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484896?q=121" },
+            { "name": "Ворота 122", "left": "14.5%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443412?q=122" },
+            { "name": "Ворота 123", "left": "17.7%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484900?q=123" },
+            { "name": "Ворота 124", "left": "30.4%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488793?q=124" },
+            { "name": "Ворота 125", "left": "33.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488794?q=125" },
+            { "name": "Ворота 126", "left": "36.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488795?q=126" },
+            { "name": "Ворота 127", "left": "39.7%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488807?q=127" },
+            { "name": "Ворота 128", "left": "42.7%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488796?q=128" },
+            { "name": "Ворота 129", "left": "54.8%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471429" },
+            { "name": "Ворота 130", "left": "57.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471440?q=130" },
+            { "name": "Ворота 131", "left": "60.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471421?q=131" },
+            { "name": "Ворота 132", "left": "63.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471435?q=132" },
+            { "name": "Ворота 133", "left": "66.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471410?q=133" },
+            { "name": "Ворота 134", "left": "69.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471424?q=134" },
+            { "name": "Ворота 135", "left": "72.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471425?q=135" },
+            { "name": "Ворота 136", "left": "75.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471412?q=136" },
+            { "name": "Ворота 137", "left": "78.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471433?q=137" },
+            { "name": "Ворота П", "left": "82.45%", "top": "86.5%", "url": "" },
+
+            // === БЛОК 5: АДМИНИСТРАТИВНЫЙ КОРПУС ===
+            { "name": "Обзор парковки", "left": "43.2%", "top": "6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487351" },
+            { "name": "WB Вход", "left": "45%", "top": "6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487350" },
+            { "name": "Пост охраны", "left": "47.2%", "top": "16%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484898" },
+            { "name": "Столовая 1", "left": "44.7%", "top": "9.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443403" },
+            { "name": "Столовая 2", "left": "41.7%", "top": "9.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484899" },
+            { "name": "Лестница", "left": "40.1%", "top": "13.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487352" },
+
+            // === БЛОК 6-7: СКЛАДСКИЕ БЛОКИ (РЯДЫ) ===
+            // Складской блок 1
+            { "name": "1", "left": "12.7%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486389?q=118" },
+            { "name": "2", "left": "14%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486385?q=116" },
+            { "name": "3", "left": "12.7%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486379?q=2.82" },
+            { "name": "4", "left": "14%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486385?q=116" },
+            { "name": "5", "left": "21.5%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486390" },
+            { "name": "6", "left": "22.9%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486375" },
+            { "name": "Блок-7", "left": "21.5%", "top": "18%", "url": "" },
+            { "name": "8", "left": "22.9%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486388" },
+            { "name": "9", "left": "30.4%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489877" },
+            { "name": "Стол старших 2", "left": "31.7%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489878" },
+            { "name": "10", "left": "30.4%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489870" },
+            { "name": "11", "left": "31.7%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489872" },
+            { "name": "12", "left": "12%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486372" },
+            { "name": "13", "left": "13.4%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486382" },
+            { "name": "14", "left": "12%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486387?q=2.75" },
+            { "name": "15", "left": "13.4%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486378" },
+            { "name": "16", "left": "11.5%", "top": "51.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488712" },
+            { "name": "17", "left": "13%", "top": "51.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488703?q=2.105" },
+            { "name": "18", "left": "11.5%", "top": "54%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488705?q=2.107" },
+            { "name": "19", "left": "13%", "top": "54%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488704?q=2.106" },
+            { "name": "20", "left": "11.5%", "top": "69.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487389" },
+            { "name": "21", "left": "12.9%", "top": "69.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487397" },
+            { "name": "22", "left": "11.4%", "top": "72.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487390" },
+            { "name": "23", "left": "12.9%", "top": "72.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487394?q=2.96" },
+            { "name": "24", "left": "30%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489886?q=2.62" },
+            { "name": "25", "left": "31.3%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489879" },
+            { "name": "26", "left": "30%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489883" },
+            { "name": "27", "left": "31.3%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489880?q=2.56" },
+            { "name": "28", "left": "29.8%", "top": "52%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489488?q=2.39" },
+            { "name": "29", "left": "31.1%", "top": "52%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489480?q=2.31" },
+            { "name": "30", "left": "29.9%", "top": "54.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489481?q=2.32" },
+            { "name": "31", "left": "31.1%", "top": "54.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489484" },
+            { "name": "32", "left": "29.3%", "top": "70.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488803" },
+            { "name": "33", "left": "30.6%", "top": "70.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488791?q=2.11" },
+            { "name": "34", "left": "29.3%", "top": "73.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488808" },
+            { "name": "35", "left": "30.6%", "top": "73.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488801?q=124" },
+            { "name": "36", "left": "21.4%", "top": "24.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486381" },
+            { "name": "37", "left": "22.8%", "top": "24.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486375" },
+            { "name": "38", "left": "21.4%", "top": "27.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486377" },
+            { "name": "39", "left": "22.8%", "top": "27.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486371 " },
+            { "name": "40", "left": "20.7%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488714?q=2.116" },
+            { "name": "41", "left": "22.1%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489490" },
+            { "name": "42", "left": "20.7%", "top": "45.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488713?q=2.115" },
+            { "name": "43", "left": "22.1%", "top": "45.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488711" },
+            { "name": "44", "left": "20.5%", "top": "60.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488702" },
+            { "name": "45", "left": "22.1%", "top": "60.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489480" },
+            { "name": "46", "left": "20.5%", "top": "63%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488700" },
+            { "name": "47", "left": "22.1%", "top": "63%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489484" },
+            { "name": "48", "left": "38.92%", "top": "24.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489869" },
+            { "name": "49", "left": "40.4%", "top": "24.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489871" },
+            { "name": "51", "left": "40.4%", "top": "27%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489873" },
+            { "name": "50", "left": "38.92%", "top": "27%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489882" },
+            { "name": "52", "left": "39.1%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489491?q=2.42" },
+            { "name": "53", "left": "40.5%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489492" },
+            { "name": "54", "left": "39.1%", "top": "45.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489490?q=2.41" },
+            { "name": "55", "left": "40.5%", "top": "45.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489487?q=2.38" },
+            { "name": "56", "left": "38.5%", "top": "60%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489485?q=2.36" },
+            { "name": "57", "left": "40%", "top": "60%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489482?q=2.33" },
+            { "name": "58", "left": "38.5%", "top": "63%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489493" },
+            { "name": "59", "left": "40%", "top": "63%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489483?q=128" },
+            { "name": "60", "left": "37.9%", "top": "79%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488804" },
+            { "name": "61", "left": "39.5%", "top": "79%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488800" },
+            { "name": "62", "left": "37.9%", "top": "82.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488806" },
+            { "name": "63", "left": "39.5%", "top": "82.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488810" },
+            { "name": "64", "left": "5.5%", "top": "24.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486391" },
+            { "name": "65", "left": "5.5%", "top": "27.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486380" },
+            { "name": "Блок-66", "left": "2.8%", "top": "42.6%", "url": "" },
+            { "name": "67", "left": "4.5%", "top": "42.6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488707" },
+            { "name": "Блок-68", "left": "2.8%", "top": "45.2%", "url": "" },
+            { "name": "69", "left": "4.5%", "top": "45.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488706" },
+            { "name": "70", "left": "4%", "top": "61%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488710" },
+            { "name": "71", "left": "4%", "top": "63.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488698" },
+            { "name": "72", "left": "48%", "top": "25.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489875" },
+            { "name": "73", "left": "47.7%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489874" },
+            { "name": "74", "left": "47.7%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489876?q=обзор" },
+            { "name": "75", "left": "47.9%", "top": "51.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489486?q=обзор" },
+            { "name": "76", "left": "47.9%", "top": "54.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489489?q=обзор" },
+            { "name": "Стол старших ПМ", "left": "47.4%", "top": "70.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488790?q=сто" },
+            { "name": "77", "left": "47.7%", "top": "72.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488798" },
+            { "name": "78", "left": "48.3%", "top": "69%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488797" },
+            { "name": "79", "left": "3.2%", "top": "87%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487606" },
+            { "name": "80", "left": "29.2%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488805" },
+            { "name": "81", "left": "46.1%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488809" },
+            { "name": "82", "left": "29.6%", "top": "81%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488792?q=акк" },
+            { "name": "83", "left": "31%", "top": "81%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488801" },
+            { "name": "84", "left": "10.5%", "top": "82.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487608" },
+            { "name": "85", "left": "11.92%", "top": "82.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487607" },
+            { "name": "86", "left": "6.6%", "top": "12%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486369" },
+            { "name": "87", "left": "34.7%", "top": "11.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489881" },
+            { "name": "88", "left": "7.15%", "top": "10.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486392" },
+            { "name": "89", "left": "27%", "top": "88.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488799" },
+            
+
+            
+            // Складской блок 2
+            { "name": "1", "left": "53.5%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471428?q=эвак" },
+            { "name": "1.2", "left": "49.3%", "top": "15.4%", "url": "" },
+            { "name": "2.2", "left": "52.5%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465103" },
+            { "name": "3.2", "left": "53.8%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465099" },
+            { "name": "4.2", "left": "61%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465104" },
+            { "name": "5.2", "left": "62.3%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465108" },
+            { "name": "6.2", "left": "69.8%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466320" },
+            { "name": "7.2", "left": "71.1%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466323" },
+            { "name": "8.2", "left": "78.5%", "top": "14.6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471482" },
+            { "name": "6.2", "left": "79.8%", "top": "14.6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471492?q=стол" },
+            { "name": "10.2", "left": "49.3%", "top": "18.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465102" },
+            { "name": "11.2", "left": "52.5%", "top": "18.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465091" },
+            { "name": "12.2", "left": "53.8%", "top": "18.1%", "url": "" },
+            { "name": "13.2", "left": "90.8%", "top": "78.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484902" },
+            { "name": "14.2", "left": "69.8%", "top": "18.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466322" },
+            { "name": "15.2", "left": "71.1%", "top": "18.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466321" },
+            { "name": "16.2", "left": "62.1%", "top": "78.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471427?q=ворота+134" },
+            { "name": "17.2", "left": "63.7%", "top": "78.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471426?q=2.2.1" },
+            { "name": "18.2", "left": "80.5%", "top": "78.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487454?q=1.19" },
+            { "name": "19.2", "left": "81.9%", "top": "78.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471441" },
+            { "name": "20.2", "left": "53%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471457?q=эвак" },
+            { "name": "21.2", "left": "62.1%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471450" },
+            { "name": "22.2", "left": "63.7%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471448" },
+            { "name": "23.2", "left": "71.4%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471414" },
+            { "name": "24.2", "left": "72.8%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471447" },
+            { "name": "25.2", "left": "80.5%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471439" },
+            { "name": "26.2", "left": "81.9%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471446?q=%D0%B0%D0%BA%D0%BA%D1%83%D0%BC" },
+            { "name": "27.2", "left": "54.3%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471416?q=129" },
+            { "name": "28.2", "left": "52.5%", "top": "33%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465096" },
+            { "name": "29.2", "left": "52.5%", "top": "35.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465105" },
+            { "name": "30.2", "left": "52.5%", "top": "51.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471442" },
+            { "name": "31.2", "left": "52.5%", "top": "54%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471423" },
+            { "name": "32.2", "left": "52.5%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471445" },
+            { "name": "33.2", "left": "52.5%", "top": "72.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471432" },
+            { "name": "34.2", "left": "61%", "top": "24.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465104" },
+            { "name": "35.2", "left": "62.5%", "top": "24.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465100" },
+            { "name": "36.2", "left": "54%", "top": "72.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471416" },
+            { "name": "37.2", "left": "70.7%", "top": "72.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471419" },
+            { "name": "38.2", "left": "72%", "top": "72.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471431" },
+            { "name": "39.2", "left": "84%", "top": "88.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443404?q=акку" },
+            { "name": "40.2", "left": "90%", "top": "88.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471444?q=акку" },
+            { "name": "41.2", "left": "50%", "top": "11%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466272?q=эва" },
+            { "name": "42.2", "left": "53.9%", "top": "33%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465101" },
+            { "name": "43.2", "left": "53.9%", "top": "35.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465098" },
+            { "name": "44.2", "left": "53.9%", "top": "51.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471436" },
+            { "name": "45.2", "left": "53.9%", "top": "54%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471452" },
+            { "name": "46.2", "left": "53.9%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471455" },
+            { "name": "47.2", "left": "61%", "top": "27%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465097" },
+            { "name": "48.2", "left": "61.5%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471420" },
+            { "name": "49.2", "left": "61.5%", "top": "45%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471454" },
+            { "name": "50.2", "left": "61.5%", "top": "60%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471418" },
+            { "name": "51.2", "left": "61.5%", "top": "62.5%", "url": "" },
+            { "name": "52.2", "left": "62.5%", "top": "27%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465094" },
+            { "name": "53.2", "left": "63%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471413" },
+            { "name": "54.2", "left": "63%", "top": "45%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471449" },
+            { "name": "55.2", "left": "63%", "top": "60%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471434?q=1.59&date=1772873724000" },
+            { "name": "56.2", "left": "63%", "top": "62.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471430" },
+            { "name": "57.2", "left": "70.7%", "top": "33%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465107" },
+            { "name": "58.2", "left": "70.7%", "top": "35.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465095" },
+            { "name": "59.2", "left": "70.7%", "top": "51.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471417" },
+            { "name": "60.2", "left": "70.7%", "top": "53.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471415" },
+            { "name": "61.2", "left": "70.7%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471422" },
+            { "name": "62.2", "left": "72%", "top": "33%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465093" },
+            { "name": "63.2", "left": "72%", "top": "35.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465106" },
+            { "name": "64.2", "left": "72%", "top": "51.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471443" },
+            { "name": "65.2", "left": "72%", "top": "53.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471456" },
+            { "name": "66.2", "left": "72%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471411" },
+
+
+            // === БЛОК 8: ВНЕШНИЙ ПЕРИМЕТР ===
+            { "name": "Периметр", "left": "50.5%", "top": "92%", "url": "" },
+            { "name": "Курилку", "left": "49.2%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487355?q=%D0%BA%D1%83%D1%80%D0%B8" }
+        ];
+
+        const wrapper = document.getElementById('wrapper');
+        
+        cameraData.forEach(point => {
+            const btn = document.createElement('div');
+            btn.className = 'camera-btn';
+            btn.style.left = point.left;
+            btn.style.top = point.top;
+            btn.setAttribute('data-name', point.name); // Устанавливаем имя для подсказки
+            
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                if(point.url) window.open(point.url, '_blank');
+                else alert("Ссылка для " + point.name + " еще не настроена");
+            };
+            
+            wrapper.appendChild(btn);
+        });
+
+        // Помощник для получения координат (F12 -> Console)
+        wrapper.onclick = (e) => {
+            const rect = wrapper.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(2);
+            const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(2);
+            console.log(`{ "name": "Новая камера", "left": "${x}%", "top": "${y}%", "url": "" },`);
+        };
+    </script>
+</body>
+</html>
