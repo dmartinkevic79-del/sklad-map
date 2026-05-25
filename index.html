@@ -7,13 +7,13 @@
         :root {
             --neon-purple: #02f03673; 
             --neon-green: #02f03673;
-            --glass-color: rgba(17, 17, 17, 0.359); 
+            --glass-color: rgba(17, 17, 17, 0.055); 
             --glass-border: rgba(255, 255, 255, 0.712);
         }
 
         body { 
             margin: 0; 
-            background: #050505a9; 
+            background: #0505054d; 
             color: #f0f0f0; 
             font-family: 'Segoe UI', 'Roboto', sans-serif; 
             overflow-x: hidden;
@@ -79,13 +79,13 @@
         .btn-purple { color: #ecebec; border-color: rgba(248, 246, 250, 0.534); }
         .btn-active-mode { 
             background: rgba(13, 14, 13, 0.2) !important; 
-            border-color: var(--neon-white) !important; 
+            border-color: var(--neon-green) !important; 
             color: #ffffff18 !important; 
         }
 
         #smart-paste {
             width: 280px;
-            border-color: var(--neon-white);
+            border-color: var(--neon-purple);
             border-style: solid;
             background: rgba(168, 112, 255, 0.05);
         }
@@ -93,7 +93,7 @@
         .time-display {
             font-family: 'Consolas', monospace;
             font-size: 22px;
-            color: var(--neon-white);
+            color: var(--neon-green);
             padding: 0 10px;
             text-shadow: 0 0 10px rgba(30, 31, 30, 0.4);
         }
@@ -166,7 +166,7 @@
     </div>
 
     <div class="bar-group">
-        <input type="text" id="smart-paste" class="glass-item" placeholder="ВРЕМЯ (ЧЧ:ММ:СС)">
+        <input type="text" id="smart-paste" class="glass-item" placeholder="URL ИЛИ ВРЕМЯ (ЧЧ:ММ:СС)">
         <button class="glass-item btn-glass btn-purple" onclick="copyCurrentLink()" title="Копировать метку времени">🔗</button>
     </div>
 
@@ -235,6 +235,7 @@
         { "name": "WB Вход", "left": "45%", "top": "6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487350" },
         { "name": "Пост охраны", "left": "47.2%", "top": "16%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484898" },
         { "name": "Столовая 1", "left": "44.7%", "top": "9.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443403" },
+        { "name": "Раздевалка", "left": "46.7%", "top": "9.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443405" },
         { "name": "Столовая 2", "left": "41.7%", "top": "9.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484899" },
         { "name": "Лестница", "left": "40.1%", "top": "13.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487352" },
         { "name": "1", "left": "12.7%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486389?q=118" },
@@ -325,6 +326,9 @@
         { "name": "87", "left": "34.7%", "top": "11.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489881" },
         { "name": "88", "left": "7.15%", "top": "10.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486392" },
         { "name": "89", "left": "27%", "top": "88.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488799" },
+        { "name": "90", "left": "50.5%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487356" },
+        { "name": "90", "left": "24.9%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487395" },
+        { "name": "90", "left": "22.5%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487393" },
         
         // === БЛОК 2 ===
         { "name": "1.2", "left": "53.5%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471428" },
@@ -433,7 +437,7 @@
 
     function updateDisplay() {
         if (currentMs === 0) {
-            clockView.innerText = "00:00:00";
+            clockView.innerText = "Старт";
             return;
         }
         const d = new Date(currentMs);
