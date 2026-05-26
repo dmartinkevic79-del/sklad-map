@@ -2,18 +2,18 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>SOFRINOKBT - Ultimate Glass Control v2.1</title>
+    <title>SOFRINOKBT - Ultimate Glass Control v3.0</title>
     <style>
         :root {
-            --neon-purple: #02f03673; 
-            --neon-green: #02f03673;
+            --neon-green: #02f03673; /* Твой фирменный зеленый с прозрачностью */
+            --neon-green-solid: #02f035a1; /* Сплошной зеленый для свечения и текста */
             --glass-color: rgba(17, 17, 17, 0.055); 
             --glass-border: rgba(255, 255, 255, 0.712);
         }
 
         body { 
             margin: 0; 
-            background: #0505054d; 
+            background: #050505; 
             color: #f0f0f0; 
             font-family: 'Segoe UI', 'Roboto', sans-serif; 
             overflow-x: hidden;
@@ -55,11 +55,12 @@
             transition: all 0.2s ease;
         }
 
-        /* ИСПРАВЛЕНИЕ КАЛЕНДАРЯ */
+        /* ИСПРАВЛЕНИЕ КАЛЕНДАРЯ (БЕЛАЯ ИКОНКА) */
         input[type="date"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
             cursor: pointer;
             opacity: 0.8;
+            transition: 0.2s;
         }
         input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
@@ -76,26 +77,40 @@
             transform: translateY(-1px);
         }
 
-        .btn-purple { color: #ecebec; border-color: rgba(248, 246, 250, 0.534); }
+        .btn-green-accent { color: #ecebec; border-color: rgba(248, 246, 250, 0.534); }
+        
         .btn-active-mode { 
-            background: rgba(13, 14, 13, 0.2) !important; 
-            border-color: var(--neon-green) !important; 
-            color: #ffffff18 !important; 
+            background: var(--neon-green) !important; 
+            border-color: var(--neon-green-solid) !important; 
+            color: #fff !important; 
+            box-shadow: 0 0 15px rgba(2, 240, 54, 0.4);
         }
 
         #smart-paste {
             width: 280px;
-            border-color: var(--neon-purple);
+            border-color: var(--neon-green-solid);
             border-style: solid;
-            background: rgba(168, 112, 255, 0.05);
+            background: rgba(2, 240, 54, 0.05);
         }
 
         .time-display {
             font-family: 'Consolas', monospace;
             font-size: 22px;
-            color: var(--neon-green);
+            color: var(--neon-green-solid);
             padding: 0 10px;
-            text-shadow: 0 0 10px rgba(30, 31, 30, 0.4);
+            text-shadow: 0 0 10px rgba(2, 240, 54, 0.4);
+        }
+
+        .archive-indicator {
+            display: none;
+            color: #ff3333;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: 1px solid #ff3333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: -5px;
         }
 
         .map-container { 
@@ -107,7 +122,7 @@
             width: fit-content;
         }
         
-        .map-img { display: block; max-width: 100%; height: auto; opacity: 0.9; }
+        .map-img { display: block; max-width: 100%; height: auto; opacity: 0.9; object-fit: contain; }
         
         /* КНОПКИ КАМЕР */
         .camera-btn {
@@ -119,29 +134,29 @@
         }
         
         .camera-btn:hover { 
-            background: var(--neon-green); 
-            box-shadow: 0 0 15px var(--neon-green); 
+            background: var(--neon-green-solid); 
+            box-shadow: 0 0 15px var(--neon-green-solid); 
             transform: translate(-50%, -50%) scale(1.6); 
             z-index: 100;
         }
 
         /* АКТИВНОЕ СОСТОЯНИЕ ВЫБРАННОЙ КАМЕРЫ */
         .camera-btn.active-cam {
-            background: var(--neon-purple);
-            border-color: #ffffff00;
-            box-shadow: 0 0 20px var(--neon-purple);
+            background: var(--neon-green-solid);
+            border-color: #fff;
+            box-shadow: 0 0 20px var(--neon-green-solid);
             transform: translate(-50%, -50%) scale(1.4);
             z-index: 101;
         }
 
-        .camera-btn.no-url { opacity: 0.2; cursor: not-allowed; border-style: dotted; }
+        .camera-btn.no-url { opacity: 0.2; cursor: not-allowed; border-style: dotted; border-color: rgba(255,255,255,0.5); }
 
         .camera-btn::after {
             content: attr(data-name); position: absolute; bottom: 20px; left: 50%;
             transform: translateX(-50%); 
             background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
             color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 11px;
-            display: none; border: 1px solid var(--neon-purple); white-space: nowrap;
+            display: none; border: 1px solid var(--neon-green-solid); white-space: nowrap;
             pointer-events: none;
         }
         .camera-btn:hover::after { display: block; }
@@ -151,7 +166,7 @@
             background: linear-gradient(transparent, rgba(0,0,0,0.9)); 
             padding: 15px;
             font-size: 11px; letter-spacing: 4px; font-weight: bold; 
-            color: rgba(255,255,255,0.4); /* Сделал ярче для читаемости */
+            color: rgba(255,255,255,0.4);
             text-align: center; text-transform: uppercase;
             z-index: 999;
             pointer-events: none;
@@ -166,19 +181,20 @@
     </div>
 
     <div class="bar-group">
-        <input type="text" id="smart-paste" class="glass-item" placeholder="URL ИЛИ ВРЕМЯ (ЧЧ:ММ:СС)">
-        <button class="glass-item btn-glass btn-purple" onclick="copyCurrentLink()" title="Копировать метку времени">🔗</button>
+        <input type="text" id="smart-paste" class="glass-item" placeholder="Время (Начало воспроизведения)">
+        <button class="glass-item btn-glass btn-green-accent" onclick="copyCurrentLink()" title="Копировать метку времени">🔗</button>
     </div>
 
     <div class="bar-group">
         <div id="clock-view" class="time-display">00:00:00</div>
-        <button id="play-btn" class="glass-item btn-glass btn-purple" style="width: 80px;" onclick="toggleTimer()">ПУСК</button>
+        <div id="archive-indicator" class="archive-indicator">[ АРХИВ ]</div>
+        <button id="play-btn" class="glass-item btn-glass btn-green-accent" style="width: 80px;" onclick="toggleTimer()">ПУСК</button>
     </div>
 
     <div class="bar-group">
         <button class="glass-item btn-glass" onclick="adjustTime(-1)">-1м</button>
         <button class="glass-item btn-glass" onclick="adjustTime(1)">+1м</button>
-        <button class="glass-item btn-glass btn-purple" style="color: #f80505;" onclick="resetToLive()">СБРОС</button>
+        <button class="glass-item btn-glass btn-green-accent" style="color: #f80505;" onclick="resetToLive()">СБРОС</button>
     </div>
 </header>
 
@@ -327,8 +343,8 @@
         { "name": "88", "left": "7.15%", "top": "10.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486392" },
         { "name": "89", "left": "27%", "top": "88.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488799" },
         { "name": "90", "left": "50.5%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487356" },
-        { "name": "90", "left": "24.9%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487395" },
-        { "name": "90", "left": "22.5%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487393" },
+        { "name": "91", "left": "24.9%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487395" },
+        { "name": "92", "left": "22.5%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487393" },
         
         // === БЛОК 2 ===
         { "name": "1.2", "left": "53.5%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471428" },
@@ -395,7 +411,11 @@
         { "name": "64.2", "left": "72%", "top": "51.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471443" },
         { "name": "65.2", "left": "72%", "top": "53.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471456" },
         { "name": "66.2", "left": "72%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471411" },
-        { "name": "Курилка", "left": "49.2%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487355" }
+        { "name": "Курилка", "left": "49.2%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487355" },
+
+        // === БЛОК 3: МЕЗОНИН ===
+        // Вставляй новые камеры сюда, например:
+        // { "name": "Мезонин 1", "left": "10%", "top": "10%", "url": "..." }
     ];
 
     let timer = null;
@@ -405,8 +425,17 @@
     const dateInput = document.getElementById('master-date');
     const clockView = document.getElementById('clock-view');
     const playBtn = document.getElementById('play-btn');
+    const archiveInd = document.getElementById('archive-indicator');
 
     dateInput.valueAsDate = new Date();
+
+    // Быстрый фокус (Alt + F)
+    document.addEventListener('keydown', (e) => {
+        if (e.altKey && e.key.toLowerCase() === 'f') {
+            e.preventDefault();
+            smartInput.focus();
+        }
+    });
 
     // SMART PASTE С РУЧНОЙ КОРРЕКТИРОВКОЙ
     smartInput.addEventListener('input', (e) => {
@@ -437,11 +466,13 @@
 
     function updateDisplay() {
         if (currentMs === 0) {
-            clockView.innerText = "Старт";
+            clockView.innerText = "В прямом эфире";
+            archiveInd.style.display = 'none';
             return;
         }
         const d = new Date(currentMs);
         clockView.innerText = d.toTimeString().split(' ')[0];
+        archiveInd.style.display = 'block'; // Показываем маркер "АРХИВ"
     }
 
     function toggleTimer() {
@@ -474,8 +505,20 @@
     }
 
     function copyCurrentLink() {
-        if (currentMs === 0) return;
-        const link = `?date=${currentMs}`;
+        const activeCam = document.querySelector('.camera-btn.active-cam');
+        if (!activeCam) {
+            alert("Сначала выбери камеру на карте!");
+            return;
+        }
+
+        const baseUrl = activeCam.getAttribute('data-url');
+        let link = baseUrl;
+        
+        if (currentMs > 0) {
+            const sep = link.includes('?') ? '&' : '?';
+            link += `${sep}date=${currentMs}`;
+        }
+        
         navigator.clipboard.writeText(link).then(() => {
             const oldVal = smartInput.value;
             smartInput.value = "СКОПИРОВАНО!";
@@ -487,8 +530,14 @@
     cameraData.forEach(cam => {
         const btn = document.createElement('div');
         btn.className = 'camera-btn' + (cam.url ? '' : ' no-url');
-        btn.style.left = cam.left; btn.style.top = cam.top;
+        btn.style.left = cam.left; 
+        btn.style.top = cam.top;
         btn.setAttribute('data-name', cam.name);
+        
+        // Вшиваем URL прямо в кнопку для 100% точного копирования
+        if (cam.url) {
+            btn.setAttribute('data-url', cam.url);
+        }
         
         btn.onclick = () => {
             if (!cam.url) return;
