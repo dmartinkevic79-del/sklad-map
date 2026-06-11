@@ -2,568 +2,595 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>SOFRINOKBT - Ultimate Glass Control v3.0</title>
-    
-   <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOFRINOKBT - Control Panel v6.8 Premium</title>
+
+    <link rel="icon" type="image/png" href="favicon.png">
     
     <style>
         :root {
-            --neon-green: #02f03673; /* Твой фирменный зеленый с прозрачностью */
-            --neon-green-solid: #02f035a1; /* Сплошной зеленый для свечения и текста */
-            --glass-color: rgba(17, 17, 17, 0.055); 
-            --glass-border: rgba(255, 255, 255, 0.712);
+            --accent-gold: #c5a059;
+            --accent-gold-glow: rgba(197, 160, 89, 0.3);
+            --muted-emerald: #169c38;
+            --muted-emerald-glow: rgba(36, 138, 61, 0.25);
+            --glass-color: rgba(255, 255, 255, 0.02); 
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --bg-dark: #0a0b0c69;
+            --panel-bg: rgba(17, 19, 21, 0.419);
+            --font-mono: 'JetBrains Mono', 'Consolas', monospace;
         }
 
         body { 
             margin: 0; 
-            background: #050505; 
-            color: #f0f0f0; 
-            font-family: 'Segoe UI', 'Roboto', sans-serif; 
-            overflow-x: hidden;
+            background: var(--bg-dark); 
+            color: #d1d5db; 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* ПАНЕЛЬ УПРАВЛЕНИЯ */
+        .visually-hidden {
+            position: absolute;
+            width: 1px; height: 1px; padding: 0; margin: -1px; 
+            overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+        }
+
+        :focus-visible {
+            outline: 1px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
         .top-bar {
             position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 96%;
-            max-width: 1500px;
-            height: 60px;
-            background: rgba(20, 20, 20, 0.342);
-            backdrop-filter: blur(25px) saturate(200%);
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border-radius: 30px;
+            top: 15px; left: 50%; transform: translateX(-50%);
+            width: 97%; max-width: 1650px; height: 54px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 10px;
             border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            z-index: 1000;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: nowrap; white-space: nowrap;
+            padding: 0 20px; z-index: 1000;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
             box-sizing: border-box;
         }
 
-        .bar-group { display: flex; align-items: center; gap: 12px; }
+        .bar-group { display: flex; align-items: center; gap: 8px; }
+
+        .label-text { 
+            font-size: 10px;
+            text-transform: uppercase; 
+            font-weight: 700; color: rgba(255,255,255,0.4); 
+            letter-spacing: 1.5px; user-select: none;
+        }
 
         .glass-item {
             background: var(--glass-color);
             border: 1px solid var(--glass-border);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 18px;
-            font-size: 13px;
-            outline: none;
-            transition: all 0.2s ease;
+            color: #fff; padding: 0 12px; border-radius: 6px;
+            font-size: 11px; outline: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 32px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        /* ИСПРАВЛЕНИЕ КАЛЕНДАРЯ (БЕЛАЯ ИКОНКА) */
+        
+        input[type="date"] {
+            color-scheme: dark;
+            font-family: var(--font-mono);
+            font-size: 11px; cursor: pointer;
+        }
         input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
-            opacity: 0.8;
-            transition: 0.2s;
+            filter: invert(0.6) sepia(1) saturate(5) hue-rotate(10deg);
+            cursor: pointer; opacity: 0.7; transition: 0.2s;
         }
         input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
-        .btn-glass {
-            cursor: pointer;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 1px;
+        .btn-icon {
+            background: transparent;
+            border: 1px solid transparent;
+            color: rgba(255,255,255,0.6); width: 34px; height: 32px; 
+            padding: 0; border-radius: 6px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
         }
-        .btn-glass:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: translateY(-1px);
-        }
+        .btn-icon:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+        .btn-icon svg { width: 15px; height: 15px; transition: transform 0.15s; }
+        .btn-icon:active svg { transform: scale(0.9); }
 
-        .btn-green-accent { color: #ecebec; border-color: rgba(248, 246, 250, 0.534); }
-        
-        .btn-active-mode { 
-            background: var(--neon-green) !important; 
-            border-color: var(--neon-green-solid) !important; 
-            color: #fff !important; 
-            box-shadow: 0 0 15px rgba(2, 240, 54, 0.4);
+        .btn-icon.active-mode { 
+            color: var(--muted-emerald) !important;
+            background: var(--muted-emerald-glow) !important;
         }
+        #reset-btn { color: rgba(223, 61, 61, 0.695); }
+        #reset-btn:hover { color: #ff5555; background: rgba(204, 68, 68, 0.1); }
 
         #smart-paste {
-            width: 280px;
-            border-color: var(--neon-green-solid);
-            border-style: solid;
-            background: rgba(2, 240, 54, 0.05);
+            width: 78px; text-align: center; 
+            font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.5px;
+        }
+        #smart-paste:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-gold-glow); background: rgba(255,255,255,0.04);
+        }
+        #smart-paste::placeholder { color: rgba(255,255,255,0.2); }
+
+        .active-cam-text {
+            font-family: var(--font-mono);
+            font-size: 11px; font-weight: 600; 
+            color: var(--accent-gold); text-transform: uppercase; 
+            border: 1px solid rgba(197, 160, 89, 0.15);
+            padding: 0 14px; border-radius: 6px;
+            background: rgba(197, 160, 89, 0.02);
+            min-width: 160px; max-width: 220px; height: 32px;
+            display: flex; align-items: center; justify-content: center; 
+            box-sizing: border-box; letter-spacing: 0.5px;
+            overflow: hidden; text-overflow: ellipsis;
         }
 
+        .time-container { display: flex; align-items: center; gap: 10px; }
         .time-display {
-            font-family: 'Consolas', monospace;
-            font-size: 22px;
-            color: var(--neon-green-solid);
-            padding: 0 10px;
-            text-shadow: 0 0 10px rgba(2, 240, 54, 0.4);
+            font-family: var(--font-mono);
+            font-size: 15px; font-weight: 500; color: var(--accent-gold);
+            text-shadow: 0 0 8px var(--accent-gold-glow); min-width: 75px; text-align: center;
+            letter-spacing: 0.5px;
         }
-
         .archive-indicator {
             display: none;
-            color: #ff3333;
-            font-size: 10px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            border: 1px solid #ff3333;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: -5px;
+            color: #cc4444; font-size: 9px; font-weight: 700;
+            letter-spacing: 1px; border: 1px solid rgba(204,68,68,0.25); padding: 2px 6px;
+            border-radius: 4px; background: rgba(204,68,68,0.05); text-transform: uppercase;
+        }
+
+        /* --- ИЗМЕНЕНИЯ ДЛЯ ИСПРАВЛЕНИЯ ПЕРЕКРЫТИЯ КАМЕР --- */
+        .map-viewport {
+            width: 100vw; height: 100vh;
+            /* Убрали padding-top, чтобы карта могла центрироваться на весь экран */
+            box-sizing: border-box;
+            display: flex; justify-content: center; align-items: center; overflow: hidden;
         }
 
         .map-container { 
-            position: relative; 
-            margin: 100px auto 50px;
-            background: #000;
-            border-radius: 12px;
-            border: 1px solid #222;
-            width: fit-content;
+            position: relative; display: inline-block;
+            width: 100vw; height: auto; transition: cursor 0.2s ease;
+            /* Создаем невидимую зону безопасности (поля), чтобы карта не пряталась за панелями */
+            padding: 120px 40px 60px 40px; 
+            box-sizing: border-box;
         }
-        
-        .map-img { display: block; max-width: 100%; height: auto; opacity: 0.9; object-fit: contain; }
-        
-        /* КНОПКИ КАМЕР */
+
+        #map-layer {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #000; /* Фон под самой картой */
+            border-radius: 6px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); /* Добавляет премиальности */
+        }
+
+        .map-img { 
+            display: block; width: 100%; height: auto;
+            opacity: 0.8; pointer-events: none;
+            border-radius: 6px;
+        }
+        /* -------------------------------------------------- */
+
         .camera-btn {
-            position: absolute; width: 14px; height: 14px;
-            background: rgba(255, 255, 255, 0); 
-            border: 1px solid rgba(255, 255, 255, 0);
+            position: absolute; width: 11px; height: 11px; padding: 0;
+            background: rgba(20, 22, 24, 0.014); border: 1px solid rgba(197, 159, 89, 0);
             border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%);
-            z-index: 10; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            z-index: 10; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            appearance: none; box-shadow: 0 0 6px rgba(197, 159, 89, 0);
         }
         
-        .camera-btn:hover { 
-            background: var(--neon-green-solid); 
-            box-shadow: 0 0 15px var(--neon-green-solid); 
-            transform: translate(-50%, -50%) scale(1.6); 
+        .camera-btn:hover, .camera-btn:focus-visible { 
+            background: var(--accent-gold);
+            box-shadow: 0 0 15px var(--accent-gold), 0 0 4px #fff; 
+            transform: translate(-50%, -50%) scale(1.5); z-index: 100;
+        }
+
+        .camera-btn.active-cam {
+            background: var(--accent-gold); border-color: #fff;
+            box-shadow: 0 0 20px var(--accent-gold); transform: translate(-50%, -50%) scale(1.4); z-index: 101;
+        }
+
+        /* --- ПОДСВЕТКА ВЫБРАННОЙ КАМЕРЫ --- */
+        .camera-btn.active-selected {
+            background: var(--accent-gold) !important;
+            border: 2px solid #ffffff5f !important;
+            box-shadow: 0 0 15px var(--accent-gold), 0 0 5px #ffffff5f;
+            transform: translate(-50%, -50%) scale(1.6);
             z-index: 100;
         }
 
-        /* АКТИВНОЕ СОСТОЯНИЕ ВЫБРАННОЙ КАМЕРЫ */
-        .camera-btn.active-cam {
-            background: var(--neon-green-solid);
-            border-color: #fff;
-            box-shadow: 0 0 20px var(--neon-green-solid);
-            transform: translate(-50%, -50%) scale(1.4);
-            z-index: 101;
-        }
-
-        .camera-btn.no-url { opacity: 0.2; cursor: not-allowed; border-style: dotted; border-color: rgba(255,255,255,0.5); }
-
         .camera-btn::after {
-            content: attr(data-name); position: absolute; bottom: 20px; left: 50%;
-            transform: translateX(-50%); 
-            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
-            color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 11px;
-            display: none; border: 1px solid var(--neon-green-solid); white-space: nowrap;
-            pointer-events: none;
+            content: attr(data-name);
+            position: absolute; bottom: 18px; left: 50%;
+            transform: translateX(-50%); background: #111214;
+            color: #e5e7eb; padding: 5px 10px; border-radius: 4px; font-size: 10px;
+            display: none; border: 1px solid rgba(197, 160, 89, 0.3); white-space: nowrap; pointer-events: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7); font-weight: 500; font-family: var(--font-mono);
         }
-        .camera-btn:hover::after { display: block; }
+        .camera-btn:hover::after, .camera-btn:focus-visible::after { display: block; }
 
         .footer-sig {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9)); 
-            padding: 15px;
-            font-size: 11px; letter-spacing: 4px; font-weight: bold; 
-            color: rgba(255,255,255,0.4);
-            text-align: center; text-transform: uppercase;
-            z-index: 999;
-            pointer-events: none;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 15px;
+            font-size: 9px; letter-spacing: 6px; font-weight: 600; color: rgba(255,255,255,0.15);
+            text-align: center; text-transform: uppercase; z-index: 999; pointer-events: none;
         }
+
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-dark); z-index: 9999; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            color: var(--accent-gold); font-family: var(--font-mono); font-size: 14px;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(197, 160, 89, 0.3);
+            border-top: 3px solid var(--accent-gold); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
+    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
 </head>
 <body>
 
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <div>ПОДКЛЮЧЕНИЕ К БАЗЕ КАМЕР...</div>
+</div>
+
 <header class="top-bar">
     <div class="bar-group">
-        <input type="date" id="master-date" class="glass-item">
+        <label for="master-date" class="label-text">Дата</label>
+        <input type="date" id="master-date" class="glass-item" aria-label="Выберите дату архива">
     </div>
 
     <div class="bar-group">
-        <input type="text" id="smart-paste" class="glass-item" placeholder="Время (Начало воспроизведения)">
-        <button class="glass-item btn-glass btn-green-accent" onclick="copyCurrentLink()" title="Копировать метку времени">🔗</button>
+        <label for="smart-paste" class="label-text">Время (Alt+F)</label>
+        <input type="text" id="smart-paste" class="glass-item" placeholder="00:00:00" maxlength="8">
+        
+        <button type="button" id="copy-btn" class="btn-icon" title="Скопировать ссылку генерации">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+        </button>
+        
+        <div id="active-cam-text" class="active-cam-text" aria-live="polite">КАМЕРА НЕ ВЫБРАНА</div>
+    </div>
+
+    <div class="bar-group time-container">
+        <div id="clock-view" class="time-display" aria-live="polite">LIVE</div>
+        <div id="archive-indicator" class="archive-indicator" aria-hidden="true">Архив</div>
+        
+        <button type="button" id="play-btn" class="btn-icon" title="Запустить / Остановить секундомер">
+            <svg id="play-svg" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+        </button>
     </div>
 
     <div class="bar-group">
-        <div id="clock-view" class="time-display">00:00:00</div>
-        <div id="archive-indicator" class="archive-indicator">[ АРХИВ ]</div>
-        <button id="play-btn" class="glass-item btn-glass btn-green-accent" style="width: 80px;" onclick="toggleTimer()">ПУСК</button>
-    </div>
-
-    <div class="bar-group">
-        <button class="glass-item btn-glass" onclick="adjustTime(-1)">-1м</button>
-        <button class="glass-item btn-glass" onclick="adjustTime(1)">+1м</button>
-        <button class="glass-item btn-glass btn-green-accent" style="color: #f80505;" onclick="resetToLive()">СБРОС</button>
+        <button type="button" id="minus-time-btn" class="btn-icon" title="Назад на 1 минуту">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="11 17 6 12 11 7"></polyline>
+                <polyline points="18 17 13 12 18 7"></polyline>
+            </svg>
+        </button>
+        
+        <button type="button" id="plus-time-btn" class="btn-icon" title="Вперед на 1 минуту">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="13 17 18 12 13 7"></polyline>
+                <polyline points="6 17 11 12 6 7"></polyline>
+            </svg>
+        </button>
+        
+        <button type="button" id="reset-btn" class="btn-icon" title="Сбросить в LIVE (Прямой эфир)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 4v6h-6"></path>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+        </button>
     </div>
 </header>
 
-<div class="map-container" id="wrapper">
-    <img src="Sklad.png" class="map-img">
-</div>
+<main class="map-viewport" id="viewport">
+    <div class="map-container" id="wrapper">
+        <div id="map-layer">
+            <img src="Sklad.png" class="map-img" alt="Схема склада">
+        </div>
+    </div>
+</main>
 
 <footer class="footer-sig">
     DEVELOPED BY D. MARTINKEVICH FOR SOFRINOKBT 
 </footer>
 
 <script>
-    const cameraData = [
-        // === БЛОК 1 ===
-        { "name": "Ворота 118", "left": "8.5%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486370?q=118" },
-        { "name": "Ворота 117", "left": "11%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486386?q=117" },
-        { "name": "Ворота 116", "left": "14.1%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486383?q=116" },
-        { "name": "Ворота 115", "left": "17%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486374?q=115" },
-        { "name": "Ворота 114", "left": "19.9%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486376?q=114" },
-        { "name": "Ворота 113", "left": "22.8%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486373?q=113" },
-        { "name": "Ворота 112", "left": "25.4%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486368?q=112" },
-        { "name": "Ворота 111", "left": "28.4%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489884?q=111" },
-        { "name": "Стол старших 1", "left": "30.9%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489885" },
-        { "name": "Ворота 110", "left": "53.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466275?q=110" },
-        { "name": "Ворота 109", "left": "56.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466274?q=109" },
-        { "name": "Ворота 108", "left": "59%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466271?q=108" },
-        { "name": "Ворота 107", "left": "61.9%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466273?q=107" },
-        { "name": "Ворота 106", "left": "64.9%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466276?q=106" },
-        { "name": "Ворота 105", "left": "67.6%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466277?q=105" },
-        { "name": "Ворота 104", "left": "70.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466278?q=104" },
-        { "name": "Ворота 103", "left": "73.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471461?q=103" },
-        { "name": "Ворота 102", "left": "76.3%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471486?q=102" },
-        { "name": "Стол старших приемки", "left": "79%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471492?q=стол" },
-        { "name": "Ворота 119", "left": "5.2%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443407?q=119" },
-        { "name": "Ворота 120", "left": "8.2%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484897" },
-        { "name": "Ворота 121", "left": "11.4%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484896?q=121" },
-        { "name": "Ворота 122", "left": "14.5%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443412?q=122" },
-        { "name": "Ворота 123", "left": "17.7%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484900?q=123" },
-        { "name": "Ворота 124", "left": "30.4%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488793?q=124" },
-        { "name": "Ворота 125", "left": "33.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488794?q=125" },
-        { "name": "Ворота 126", "left": "36.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488795?q=126" },
-        { "name": "Ворота 127", "left": "39.7%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488807?q=127" },
-        { "name": "Ворота 128", "left": "42.7%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488796?q=128" },
-        { "name": "Ворота 129", "left": "54.8%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471429" },
-        { "name": "Ворота 130", "left": "57.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471440?q=130" },
-        { "name": "Ворота 131", "left": "60.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471421?q=131" },
-        { "name": "Ворота 132", "left": "63.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471435?q=132" },
-        { "name": "Ворота 133", "left": "66.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471410?q=133" },
-        { "name": "Ворота 134", "left": "69.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471424?q=134" },
-        { "name": "Ворота 135", "left": "72.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471425?q=135" },
-        { "name": "Ворота 136", "left": "75.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471412?q=136" },
-        { "name": "Ворота 137", "left": "78.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471433?q=137" },
-        { "name": "Обзор парковки", "left": "43.2%", "top": "6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487351" },
-        { "name": "WB Вход", "left": "45%", "top": "6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487350" },
-        { "name": "Пост охраны", "left": "47.2%", "top": "16%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484898" },
-        { "name": "Столовая 1", "left": "44.7%", "top": "9.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443403" },
-        { "name": "Раздевалка", "left": "46.7%", "top": "9.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443405" },
-        { "name": "Столовая 2", "left": "41.7%", "top": "9.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484899" },
-        { "name": "Лестница", "left": "40.1%", "top": "13.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487352" },
-        { "name": "1", "left": "12.7%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486389?q=118" },
-        { "name": "2", "left": "14%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486385?q=116" },
-        { "name": "3", "left": "12.7%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486379?q=2.82" },
-        { "name": "4", "left": "14%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486385?q=116" },
-        { "name": "5", "left": "21.5%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486390" },
-        { "name": "6", "left": "22.9%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486375" },
-        { "name": "8", "left": "22.9%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486388" },
-        { "name": "9", "left": "30.4%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489877" },
-        { "name": "Стол старших 2", "left": "31.7%", "top": "15.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489878" },
-        { "name": "10", "left": "30.4%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489870" },
-        { "name": "11", "left": "31.7%", "top": "18%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489872" },
-        { "name": "12", "left": "12%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486372" },
-        { "name": "13", "left": "13.4%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486382" },
-        { "name": "14", "left": "12%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486387?q=2.75" },
-        { "name": "15", "left": "13.4%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486378" },
-        { "name": "16", "left": "11.5%", "top": "51.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488712" },
-        { "name": "17", "left": "13%", "top": "51.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488703?q=2.105" },
-        { "name": "18", "left": "11.5%", "top": "54%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488705?q=2.107" },
-        { "name": "19", "left": "13%", "top": "54%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488704?q=2.106" },
-        { "name": "20", "left": "11.5%", "top": "69.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487389" },
-        { "name": "21", "left": "12.9%", "top": "69.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487397" },
-        { "name": "22", "left": "11.4%", "top": "72.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487390" },
-        { "name": "23", "left": "12.9%", "top": "72.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487394?q=2.96" },
-        { "name": "24", "left": "30%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489886?q=2.62" },
-        { "name": "25", "left": "31.3%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489879" },
-        { "name": "26", "left": "30%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489883" },
-        { "name": "27", "left": "31.3%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489880?q=2.56" },
-        { "name": "28", "left": "29.8%", "top": "52%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489488?q=2.39" },
-        { "name": "29", "left": "31.1%", "top": "52%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489480?q=2.31" },
-        { "name": "30", "left": "29.9%", "top": "54.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489481?q=2.32" },
-        { "name": "31", "left": "31.1%", "top": "54.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489484" },
-        { "name": "32", "left": "29.3%", "top": "70.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488803" },
-        { "name": "33", "left": "30.6%", "top": "70.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488791?q=2.11" },
-        { "name": "34", "left": "29.3%", "top": "73.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488808" },
-        { "name": "35", "left": "30.6%", "top": "73.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488801?q=124" },
-        { "name": "36", "left": "21.4%", "top": "24.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486381" },
-        { "name": "37", "left": "22.8%", "top": "24.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486375" },
-        { "name": "38", "left": "21.4%", "top": "27.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486377" },
-        { "name": "39", "left": "22.8%", "top": "27.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486371 " },
-        { "name": "40", "left": "20.7%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488714?q=2.116" },
-        { "name": "41", "left": "22.1%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489490" },
-        { "name": "42", "left": "20.7%", "top": "45.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488713?q=2.115" },
-        { "name": "43", "left": "22.1%", "top": "45.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488711" },
-        { "name": "44", "left": "20.5%", "top": "60.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488702" },
-        { "name": "45", "left": "22.1%", "top": "60.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489480" },
-        { "name": "46", "left": "20.5%", "top": "63%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488700" },
-        { "name": "47", "left": "22.1%", "top": "63%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489484" },
-        { "name": "48", "left": "38.92%", "top": "24.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489869" },
-        { "name": "49", "left": "40.4%", "top": "24.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489871" },
-        { "name": "51", "left": "40.4%", "top": "27%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489873" },
-        { "name": "50", "left": "38.92%", "top": "27%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489882" },
-        { "name": "52", "left": "39.1%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489491?q=2.42" },
-        { "name": "53", "left": "40.5%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489492" },
-        { "name": "54", "left": "39.1%", "top": "45.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489490?q=2.41" },
-        { "name": "55", "left": "40.5%", "top": "45.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489487?q=2.38" },
-        { "name": "56", "left": "38.5%", "top": "60%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489485?q=2.36" },
-        { "name": "57", "left": "40%", "top": "60%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489482?q=2.33" },
-        { "name": "58", "left": "38.5%", "top": "63%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489493" },
-        { "name": "59", "left": "40%", "top": "63%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489483?q=128" },
-        { "name": "60", "left": "37.9%", "top": "79%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488804" },
-        { "name": "61", "left": "39.5%", "top": "79%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488800" },
-        { "name": "62", "left": "37.9%", "top": "82.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488806" },
-        { "name": "63", "left": "39.5%", "top": "82.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488810" },
-        { "name": "64", "left": "5.5%", "top": "24.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486391" },
-        { "name": "65", "left": "5.5%", "top": "27.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486380" },
-        { "name": "67", "left": "4.5%", "top": "42.6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488707" },
-        { "name": "69", "left": "4.5%", "top": "45.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488706" },
-        { "name": "70", "left": "4%", "top": "61%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488710" },
-        { "name": "71", "left": "4%", "top": "63.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488698" },
-        { "name": "72", "left": "48.3%", "top": "25.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489875" },
-        { "name": "73", "left": "47.7%", "top": "33.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489874" },
-        { "name": "74", "left": "47.7%", "top": "36.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489876?q=обзор" },
-        { "name": "75", "left": "47.9%", "top": "51.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489486?q=обзор" },
-        { "name": "76", "left": "47.9%", "top": "54.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489489?q=обзор" },
-        { "name": "Старшие ПМ", "left": "47.4%", "top": "70.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488790" },
-        { "name": "77", "left": "47.7%", "top": "72.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488798" },
-        { "name": "78", "left": "48.3%", "top": "69%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488797" },
-        { "name": "79", "left": "3.2%", "top": "87%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487606" },
-        { "name": "80", "left": "29.2%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488805" },
-        { "name": "81", "left": "46.1%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488809" },
-        { "name": "82", "left": "29.6%", "top": "81%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488792" },
-        { "name": "83", "left": "31%", "top": "81%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488801" },
-        { "name": "84", "left": "10.5%", "top": "82.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487608" },
-        { "name": "85", "left": "11.92%", "top": "82.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487607" },
-        { "name": "86", "left": "6.6%", "top": "12%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486369" },
-        { "name": "87", "left": "34.7%", "top": "11.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/489881" },
-        { "name": "88", "left": "7.15%", "top": "10.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/486392" },
-        { "name": "89", "left": "27%", "top": "88.2%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/488799" },
-        { "name": "90", "left": "50.5%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487356" },
-        { "name": "91", "left": "24.9%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487395" },
-        { "name": "92", "left": "22.5%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487393" },
-        { "name": "93", "left": "82.45%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484901" },
-        // === БЛОК 2 ===
-        { "name": "1.2", "left": "53.5%", "top": "86.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471428" },
-        { "name": "2.2", "left": "52.5%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465103" },
-        { "name": "3.2", "left": "53.8%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465099" },
-        { "name": "4.2", "left": "61%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465104" },
-        { "name": "5.2", "left": "62.3%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465108" },
-        { "name": "6.2", "left": "69.8%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466320" },
-        { "name": "7.2", "left": "71.1%", "top": "15.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466323" },
-        { "name": "8.2", "left": "78.5%", "top": "14.6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471482" },
-        { "name": "9.2", "left": "79.8%", "top": "14.6%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471492" },
-        { "name": "10.2", "left": "49.3%", "top": "18.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465102" },
-        { "name": "10.2.1", "left": "49.3%", "top": "14.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465109" },
-        { "name": "11.2", "left": "52.5%", "top": "18.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465091" },
-        { "name": "13.2", "left": "90.8%", "top": "78.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484902" },
-        { "name": "14.2", "left": "69.8%", "top": "18.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466322" },
-        { "name": "15.2", "left": "71.1%", "top": "17.4%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466321" },
-        { "name": "16.2", "left": "62.1%", "top": "78.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471427" },
-        { "name": "17.2", "left": "63.7%", "top": "78.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471426" },
-        { "name": "18.2", "left": "80.5%", "top": "78.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487454" },
-        { "name": "19.2", "left": "81.9%", "top": "78.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471441" },
-        { "name": "20.2", "left": "53%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471457" },
-        { "name": "21.2", "left": "62.1%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471450" },
-        { "name": "22.2", "left": "63.7%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471448" },
-        { "name": "23.2", "left": "71.4%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471414" },
-        { "name": "24.2", "left": "72.8%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471447" },
-        { "name": "25.2", "left": "80.5%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471439" },
-        { "name": "26.2", "left": "81.9%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471446" },
-        { "name": "27.2", "left": "54.3%", "top": "81.02%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471416" },
-        { "name": "28.2", "left": "52.5%", "top": "33%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465096" },
-        { "name": "29.2", "left": "52.5%", "top": "35.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465105" },
-        { "name": "30.2", "left": "52.5%", "top": "51.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471442" },
-        { "name": "31.2", "left": "52.5%", "top": "54%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471423" },
-        { "name": "32.2", "left": "52.5%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471445" },
-        { "name": "33.2", "left": "52.5%", "top": "72.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471432" },
-        { "name": "34.2", "left": "61%", "top": "24.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465104" },
-        { "name": "35.2", "left": "62.5%", "top": "24.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465100" },
-        { "name": "36.2", "left": "54%", "top": "72.8%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471416" },
-        { "name": "37.2", "left": "70.7%", "top": "72.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471419" },
-        { "name": "38.2", "left": "72%", "top": "72.3%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471431" },
-        { "name": "39.2", "left": "84%", "top": "88.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443404" },
-        { "name": "40.2", "left": "90%", "top": "88.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471444" },
-        { "name": "41.2", "left": "50%", "top": "11%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/466272" },
-        { "name": "42.2", "left": "53.9%", "top": "33%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465101" },
-        { "name": "43.2", "left": "53.9%", "top": "35.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465098" },
-        { "name": "44.2", "left": "53.9%", "top": "51.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471436" },
-        { "name": "45.2", "left": "53.9%", "top": "54%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471452" },
-        { "name": "46.2", "left": "53.9%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471455" },
-        { "name": "47.2", "left": "61%", "top": "27%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465097" },
-        { "name": "48.2", "left": "61.5%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471420" },
-        { "name": "49.2", "left": "61.5%", "top": "45%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471454" },
-        { "name": "50.2", "left": "61.5%", "top": "60%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471418" },
-        { "name": "52.2", "left": "62.5%", "top": "27%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465094" },
-        { "name": "53.2", "left": "63%", "top": "42.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471413" },
-        { "name": "54.2", "left": "63%", "top": "45%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471449" },
-        { "name": "55.2", "left": "63%", "top": "60%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471434" },
-        { "name": "56.2", "left": "63%", "top": "62.5%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471430" },
-        { "name": "57.2", "left": "70.7%", "top": "33%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465107" },
-        { "name": "58.2", "left": "70.7%", "top": "35.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465095" },
-        { "name": "59.2", "left": "70.7%", "top": "51.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471417" },
-        { "name": "60.2", "left": "70.7%", "top": "53.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471415" },
-        { "name": "61.2", "left": "70.7%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471422" },
-        { "name": "62.2", "left": "72%", "top": "33%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465093" },
-        { "name": "63.2", "left": "72%", "top": "35.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/465106" },
-        { "name": "64.2", "left": "72%", "top": "51.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471443" },
-        { "name": "65.2", "left": "72%", "top": "53.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471456" },
-        { "name": "66.2", "left": "72%", "top": "69.9%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471411" },
-        { "name": "Курилка", "left": "49.2%", "top": "92%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/487355" },
-        { "name": "67.2", "left": "97.8%", "top": "72.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/484903" },
-        { "name": "68.2", "left": "98.8%", "top": "80%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/443409" },
-        { "name": "69.2", "left": "95.5%", "top": "10.7%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471467" },
-        { "name": "15.2", "left": "89%", "top": "18.1%", "url": "https://electrostal-video.whs.wb.ru/v2/cameras/player/471485" },
+document.addEventListener('DOMContentLoaded', () => {
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwNq6J8FQHy0wlHmZXs0WXCgPd3MkCU0kgpvnau79r3CoKkhBvXWlOcJydtBHUtVeNs/exec';
+    
+    let cameras = [];
 
-        // === БЛОК 3: МЕЗОНИН ===
-        // Вставляй новые камеры сюда, например:
-        // { "name": "Мезонин 1", "left": "10%", "top": "10%", "url": "..." }
-    ];
+    const ARCHIVE_MIN = new Date('2000-01-01').getTime();
+    const ARCHIVE_MAX = Date.now();
 
+    let isLiveMode = true;
+    let currentMs = Date.now();
     let timer = null;
-    let currentMs = 0;
+    let activeCam = null;
+    
+    const els = {
+        smartInput: document.getElementById('smart-paste'),
+        dateInput: document.getElementById('master-date'),
+        clockView: document.getElementById('clock-view'),
+        playBtn: document.getElementById('play-btn'),
+        playSvg: document.getElementById('play-svg'),
+        archiveInd: document.getElementById('archive-indicator'),
+        viewport: document.getElementById('viewport'),
+        wrapper: document.getElementById('wrapper'),
+        mapLayer: document.getElementById('map-layer'),
+        copyBtn: document.getElementById('copy-btn'),
+        minusBtn: document.getElementById('minus-time-btn'),
+        plusBtn: document.getElementById('plus-time-btn'),
+        resetBtn: document.getElementById('reset-btn'),
+        activeCamText: document.getElementById('active-cam-text'),
+        loadingOverlay: document.getElementById('loading-overlay')
+    };
 
-    const smartInput = document.getElementById('smart-paste');
-    const dateInput = document.getElementById('master-date');
-    const clockView = document.getElementById('clock-view');
-    const playBtn = document.getElementById('play-btn');
-    const archiveInd = document.getElementById('archive-indicator');
-
-    dateInput.valueAsDate = new Date();
-
-    // Быстрый фокус (Alt + F)
-    document.addEventListener('keydown', (e) => {
-        if (e.altKey && e.key.toLowerCase() === 'f') {
-            e.preventDefault();
-            smartInput.focus();
-        }
+    const panzoom = Panzoom(els.wrapper, {
+        maxScale: 5,
+        minScale: 1, 
+        startScale: 1,
+        step: 0.2,
+        contain: 'outside' 
     });
+    
+    els.viewport.addEventListener('wheel', panzoom.zoomWithWheel);
 
-    // SMART PASTE С РУЧНОЙ КОРРЕКТИРОВКОЙ
-    smartInput.addEventListener('input', (e) => {
-        const val = e.target.value.trim();
-        if (!val) return;
+    const mapImage = els.mapLayer.querySelector('.map-img');
+    if (mapImage) {
+        mapImage.addEventListener('load', () => panzoom.reset());
+        if (mapImage.complete) panzoom.reset();
+    }
 
-        // 1. Проверка на URL с датой
-        const dateMatch = val.match(/date=(\d+)/);
-        if (dateMatch) {
-            currentMs = parseInt(dateMatch[1]);
-            const d = new Date(currentMs);
-            dateInput.value = d.toISOString().split('T')[0];
-            updateDisplay();
-            return;
-        } 
-
-        // 2. Проверка на ручной ввод времени ЧЧ:ММ:СС или ЧЧ:ММ
-        const timeMatch = val.match(/^(\d{1,2}):(\d{2}):?(\d{2})?$/);
-        if (timeMatch) {
-            const d = new Date(dateInput.value);
-            d.setHours(parseInt(timeMatch[1]));
-            d.setMinutes(parseInt(timeMatch[2]));
-            d.setSeconds(parseInt(timeMatch[3]) || 0);
-            currentMs = d.getTime();
-            updateDisplay();
-        }
-    });
+    els.dateInput.valueAsDate = new Date();
+    
+    function clampArchive(ms) {
+        if (ms < ARCHIVE_MIN) return ARCHIVE_MIN;
+        if (ms > ARCHIVE_MAX) return ARCHIVE_MAX;
+        return ms;
+    }
 
     function updateDisplay() {
-        if (currentMs === 0) {
-            clockView.innerText = "В прямом эфире";
-            archiveInd.style.display = 'none';
-            return;
+        if (isLiveMode) {
+            els.clockView.textContent = "LIVE";
+            els.clockView.style.color = 'var(--muted-emerald)';
+            els.clockView.style.textShadow = '0 0 10px rgba(36, 138, 61, 0.4)';
+            els.archiveInd.style.display = 'none';
+        } else {
+            els.clockView.textContent = new Date(currentMs).toTimeString().split(' ')[0];
+            els.clockView.style.color = 'var(--accent-gold)';
+            els.clockView.style.textShadow = '0 0 10px var(--accent-gold-glow)';
+            els.archiveInd.style.display = 'block';
         }
-        const d = new Date(currentMs);
-        clockView.innerText = d.toTimeString().split(' ')[0];
-        archiveInd.style.display = 'block'; // Показываем маркер "АРХИВ"
+    }
+
+    function setLiveMode() {
+        isLiveMode = true;
+        if (timer) { clearInterval(timer); timer = null; }
+        els.playBtn.classList.remove('active-mode');
+        els.playSvg.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`;
+        currentMs = Date.now();
+        updateDisplay();
+    }
+
+    function setArchiveMode(timestamp) {
+        isLiveMode = false;
+        currentMs = clampArchive(timestamp);
+        updateDisplay();
     }
 
     function toggleTimer() {
+        if (isLiveMode) return;
         if (timer) {
-            clearInterval(timer);
-            timer = null;
-            playBtn.innerText = "ПУСК";
-            playBtn.classList.remove('btn-active-mode');
+            clearInterval(timer); timer = null;
+            els.playBtn.classList.remove('active-mode');
+            els.playSvg.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`;
         } else {
-            if (currentMs === 0) currentMs = new Date().getTime();
             timer = setInterval(() => {
                 currentMs += 1000;
+                currentMs = clampArchive(currentMs);
                 updateDisplay();
             }, 1000);
-            playBtn.innerText = "СТОП";
-            playBtn.classList.add('btn-active-mode');
+            els.playBtn.classList.add('active-mode');
+            els.playSvg.innerHTML = `<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>`;
         }
     }
 
     function adjustTime(mins) {
-        if (currentMs === 0) currentMs = new Date().getTime();
+        if (isLiveMode) setArchiveMode(Date.now());
         currentMs += mins * 60000;
+        currentMs = clampArchive(currentMs);
         updateDisplay();
     }
 
-    function resetToLive() {
-        if (timer) toggleTimer();
-        currentMs = 0;
-        updateDisplay();
+    function buildUrl(baseUrl, ms) {
+        if (!baseUrl) return '';
+        const safeMs = Number(ms) || 0;
+        try {
+            const urlObj = new URL(baseUrl);
+            if (!isLiveMode && safeMs > 0) urlObj.searchParams.set('date', safeMs);
+            return urlObj.toString();
+        } catch (e) {
+            let link = baseUrl;
+            if (!isLiveMode && safeMs > 0) {
+                link += (link.includes('?') ? '&' : '?') + `date=${safeMs}`;
+            }
+            return link;
+        }
     }
 
-    function copyCurrentLink() {
-        const activeCam = document.querySelector('.camera-btn.active-cam');
+    function handleTimeInput(e) {
+        const val = e.target.value.trim();
+        const match = val.match(/^(\d{1,2}):(\d{2}):(\d{2})$/);
+        if (!match) return;
+        const [ , hStr, mStr, sStr ] = match;
+        const h = Number(hStr), m = Number(mStr), s = Number(sStr);
+        if (h > 23 || m > 59 || s > 59) return;
+        const date = els.dateInput.valueAsDate ? new Date(els.dateInput.valueAsDate) : new Date();
+        date.setHours(h, m, s, 0);
+        setArchiveMode(date.getTime());
+    }
+
+    function setActiveCam(cam) {
+        activeCam = cam;
+        if (cam) {
+            els.activeCamText.textContent = cam.name;
+            els.activeCamText.title = cam.url;
+        } else {
+            els.activeCamText.textContent = 'КАМЕРА НЕ ВЫБРАНА';
+            els.activeCamText.title = '';
+        }
+    }
+
+    els.copyBtn.addEventListener('click', async () => {
         if (!activeCam) {
-            alert("Сначала выбери камеру на карте!");
+            flashTemporary('Выберите камеру'); return;
+        }
+        const url = buildUrl(activeCam.url, isLiveMode ? 0 : currentMs);
+        try {
+            await navigator.clipboard.writeText(url);
+            flashTemporary('Ссылка скопирована');
+        } catch (err) {
+            console.error('Clipboard write failed', err);
+            flashTemporary('Не удалось скопировать');
+        }
+    });
+    
+    function flashTemporary(text, ms = 1400) {
+        const toast = document.createElement('div');
+        toast.textContent = text;
+        Object.assign(toast.style, {
+            position: 'fixed', right: '20px', bottom: '20px',
+            background: 'rgba(0,0,0,0.7)', color: '#fff',
+            padding: '8px 12px', borderRadius: '8px', zIndex: 3000,
+            fontFamily: 'Segoe UI, system-ui, sans-serif', fontSize: '13px'
+        });
+        document.body.appendChild(toast);
+        setTimeout(() => toast.style.opacity = '0.01', ms - 200);
+        setTimeout(() => toast.remove(), ms);
+    }
+
+    els.minusBtn.addEventListener('click', () => adjustTime(-1));
+    els.plusBtn.addEventListener('click', () => adjustTime(1));
+    els.resetBtn.addEventListener('click', () => setLiveMode());
+    els.playBtn.addEventListener('click', toggleTimer);
+
+    els.smartInput.addEventListener('input', handleTimeInput);
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.altKey && (e.key === 'f' || e.key === 'F')) {
+            e.preventDefault();
+            els.smartInput.focus();
+            els.smartInput.select();
+        }
+        if (e.key === 'ArrowLeft') adjustTime(-1);
+        if (e.key === 'ArrowRight') adjustTime(1);
+        if (e.key === 'r' || e.key === 'R') setLiveMode();
+    });
+
+    document.addEventListener('paste', (event) => {
+        if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
             return;
         }
 
-        const baseUrl = activeCam.getAttribute('data-url');
-        let link = baseUrl;
-        
-        if (currentMs > 0) {
-            const sep = link.includes('?') ? '&' : '?';
-            link += `${sep}date=${currentMs}`;
+        const pastedText = (event.clipboardData || window.clipboardData).getData('text').trim();
+        const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/;
+
+        if (timeRegex.test(pastedText)) {
+            const timeInput = els.smartInput;
+            if (timeInput) {
+                timeInput.value = pastedText;
+                timeInput.dispatchEvent(new Event('input'));
+                flashTemporary(`Время ${pastedText} применено`, 2000);
+            }
         }
+    });
+
+    function buildCameraButtons() {
+        const existing = els.mapLayer.querySelectorAll('.camera-btn');
+        existing.forEach(n => n.remove());
         
-        navigator.clipboard.writeText(link).then(() => {
-            const oldVal = smartInput.value;
-            smartInput.value = "СКОПИРОВАНО!";
-            setTimeout(() => smartInput.value = oldVal, 1000);
+        cameras.forEach(cam => {
+            const btn = document.createElement('button');
+            btn.className = 'camera-btn';
+            btn.setAttribute('data-name', cam.name);
+            btn.setAttribute('aria-label', `Открыть камеру ${cam.name}`);
+            btn.style.left = cam.left;
+            btn.style.top = cam.top;
+            btn.tabIndex = 0;
+
+            btn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                
+                // --- ДОБАВЛЕННАЯ ЛОГИКА ПОДСВЕТКИ ---
+                // Убираем подсветку со всех других кнопок
+                els.mapLayer.querySelectorAll('.camera-btn').forEach(b => b.classList.remove('active-selected'));
+                // Добавляем подсветку на ту, по которой кликнули
+                btn.classList.add('active-selected');
+                
+                setActiveCam(cam);
+                
+                const timeToLoad = isLiveMode ? 0 : currentMs;
+                const finalUrl = buildUrl(cam.url, timeToLoad);
+                window.open(finalUrl, '_blank', 'noopener,noreferrer');
+            });
+
+            btn.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    btn.click();
+                }
+            });
+
+            els.mapLayer.appendChild(btn);
         });
     }
 
-    const wrapper = document.getElementById('wrapper');
-    cameraData.forEach(cam => {
-        const btn = document.createElement('div');
-        btn.className = 'camera-btn' + (cam.url ? '' : ' no-url');
-        btn.style.left = cam.left; 
-        btn.style.top = cam.top;
-        btn.setAttribute('data-name', cam.name);
-        
-        // Вшиваем URL прямо в кнопку для 100% точного копирования
-        if (cam.url) {
-            btn.setAttribute('data-url', cam.url);
-        }
-        
-        btn.onclick = () => {
-            if (!cam.url) return;
+    async function init() {
+        try {
+            const response = await fetch(GAS_WEB_APP_URL);
+            const rawData = await response.json();
             
-            // Установка активного состояния
-            document.querySelectorAll('.camera-btn').forEach(b => b.classList.remove('active-cam'));
-            btn.classList.add('active-cam');
+            const uniqueNames = new Set();
+            cameras = rawData.filter(cam => {
+                if (!cam.name || !cam.name.trim()) return false;
+                cam.name = cam.name.replace(/\s+/g, ' ').trim();
+                if (!cam.url || !cam.url.trim() || cam.url === 'URL_ЗДЕСЬ') return false;
+                if (uniqueNames.has(cam.name)) return false;
+                uniqueNames.add(cam.name);
+                cam.url = cam.url.trim();
+                return true;
+            });
+            
+            buildCameraButtons();
+        } catch (error) {
+            console.error('Ошибка загрузки камер:', error);
+            flashTemporary('Не удалось загрузить список камер', 3000);
+        } finally {
+            els.loadingOverlay.style.opacity = '0';
+            setTimeout(() => els.loadingOverlay.remove(), 500);
+        }
+    }
 
-            let finalUrl = cam.url;
-            if (currentMs > 0) {
-                const sep = finalUrl.includes('?') ? '&' : '?';
-                finalUrl += `${sep}date=${currentMs}`;
-            }
-            window.open(finalUrl, '_blank');
-        };
-        wrapper.appendChild(btn);
-    });
+    init();
+    setActiveCam(null);
+    updateDisplay();
+});
 </script>
-
 </body>
 </html>
