@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOFRINOKBT - Control Panel v6.8 Premium</title>
+    <title>SOFRINOKBT - Control Panel v7.0 Security</title>
 
     <link rel="icon" type="image/png" href="favicon.png">
     
@@ -141,10 +141,9 @@
             border-radius: 4px; background: rgba(204,68,68,0.05); text-transform: uppercase;
         }
 
-        /* --- ИЗМЕНЕНИЯ ДЛЯ ИСПРАВЛЕНИЯ ПЕРЕКРЫТИЯ КАМЕР --- */
+        /* --- КОНТЕЙНЕР КАРТЫ --- */
         .map-viewport {
             width: 100vw; height: 100vh;
-            /* Убрали padding-top, чтобы карта могла центрироваться на весь экран */
             box-sizing: border-box;
             display: flex; justify-content: center; align-items: center; overflow: hidden;
         }
@@ -152,31 +151,24 @@
         .map-container { 
             position: relative; display: inline-block;
             width: 100vw; height: auto; transition: cursor 0.2s ease;
-            /* Создаем невидимую зону безопасности (поля), чтобы карта не пряталась за панелями */
             padding: 120px 40px 60px 40px; 
             box-sizing: border-box;
         }
 
         #map-layer {
-            position: relative;
-            display: block;
-            width: 100%;
-            height: auto;
-            background: #000; /* Фон под самой картой */
-            border-radius: 6px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); /* Добавляет премиальности */
+            position: relative; display: block; width: 100%; height: auto;
+            background: #000; border-radius: 6px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
         }
 
         .map-img { 
             display: block; width: 100%; height: auto;
-            opacity: 0.8; pointer-events: none;
-            border-radius: 6px;
+            opacity: 0.8; pointer-events: none; border-radius: 6px;
         }
-        /* -------------------------------------------------- */
 
+        /* --- КНОПКИ КАМЕР --- */
         .camera-btn {
             position: absolute; width: 11px; height: 11px; padding: 0;
-            background: rgba(20, 22, 24, 0.014); border: 1px solid rgba(197, 159, 89, 0);
+            background: rgba(20, 22, 24, 0); border: 1px solid rgba(197, 159, 89, 0);
             border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%);
             z-index: 10; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             appearance: none; box-shadow: 0 0 6px rgba(197, 159, 89, 0);
@@ -188,16 +180,10 @@
             transform: translate(-50%, -50%) scale(1.5); z-index: 100;
         }
 
-        .camera-btn.active-cam {
-            background: var(--accent-gold); border-color: #fff;
-            box-shadow: 0 0 20px var(--accent-gold); transform: translate(-50%, -50%) scale(1.4); z-index: 101;
-        }
-
-        /* --- ПОДСВЕТКА ВЫБРАННОЙ КАМЕРЫ --- */
         .camera-btn.active-selected {
             background: var(--accent-gold) !important;
-            border: 2px solid #ffffff5f !important;
-            box-shadow: 0 0 15px var(--accent-gold), 0 0 5px #ffffff5f;
+            border: 2px solid #ffffff00 !important;
+            box-shadow: 0 0 15px var(--accent-gold), 0 0 5px #ffffff01;
             transform: translate(-50%, -50%) scale(1.6);
             z-index: 100;
         }
@@ -211,6 +197,34 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.7); font-weight: 500; font-family: var(--font-mono);
         }
         .camera-btn:hover::after, .camera-btn:focus-visible::after { display: block; }
+
+        /* --- ПОЖАРНЫЕ ЩИТЫ (НОВЫЕ СТИЛИ) --- */
+        .fire-shield-marker {
+            position: absolute; width: 4px; height: 8px;
+            background: rgba(223, 61, 61, 0.15); border: 2px solid #df3d3d;
+            border-radius: 3px; cursor: help; transform: translate(-50%, -50%);
+            z-index: 9; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .fire-shield-marker::before {
+            content: ''; width: 0px; height: 0px; background: #df3d3d; border-radius: 1px;
+        }
+        
+        .fire-shield-marker:hover {
+            background: rgba(223, 61, 61, 0.4); box-shadow: 0 0 15px rgba(223, 61, 61, 0.8);
+            transform: translate(-50%, -50%) scale(1.5); z-index: 105;
+        }
+        
+        .fire-shield-marker::after {
+            content: attr(data-id); position: absolute; bottom: 20px; left: 50%;
+            transform: translateX(-50%); background: #111214; color: #ff5555; /* Красный текст */
+            padding: 5px 10px; border-radius: 4px; font-size: 11px;
+            display: none; border: 1px solid rgba(223, 61, 61, 0.5); white-space: nowrap; pointer-events: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8); font-weight: 700; font-family: var(--font-mono);
+        }
+        
+        .fire-shield-marker:hover::after { display: block; }
 
         .footer-sig {
             position: fixed; bottom: 0; left: 0; width: 100%;
@@ -311,8 +325,79 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // ВСТАВЬ СВОЙ URL GAS НИЖЕ
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwNq6J8FQHy0wlHmZXs0WXCgPd3MkCU0kgpvnau79r3CoKkhBvXWlOcJydtBHUtVeNs/exec';
     
+    // БАЗА ПОЖАРНЫХ ЩИТОВ (Добавляй координаты здесь)
+    const fireShieldsData = [
+        { "id": "5.1", "left": "6.52%", "top": "35.4%" },
+  { "id": "5.2", "left": "13.91%", "top": "35.4%" },
+  { "id": "5.3", "left": "14.76%", "top": "35.4%" },
+  { "id": "5.4", "left": "22.15%", "top": "35.4%" },
+  { "id": "5.5", "left": "23.07%", "top": "35.4%" },
+  { "id": "5.6", "left": "30.48%", "top": "35.4%" },
+  { "id": "5.7", "left": "31.45%", "top": "35.4%" },
+  { "id": "5.8", "left": "38.75%", "top": "35.4%" },
+  { "id": "5.9", "left": "39.65%", "top": "35.4%" },
+  { "id": "5.10", "left": "46.95%", "top": "35.4%" },
+  { "id": "5.11", "left": "51.47%", "top": "35.4%" },
+  { "id": "5.12", "left": "52.41%", "top": "35.4%" },
+  { "id": "5.13", "left": "59.76%", "top": "35.4%" },
+  { "id": "5.14", "left": "60.68%", "top": "35.4%" },
+  { "id": "5.15", "left": "68.09%", "top": "35.4%" },
+  { "id": "5.16", "left": "69.01%", "top": "35.4%" },
+  { "id": "5.17", "left": "76.33%", "top": "35.4%" },
+  { "id": "5.18", "left": "77.30%", "top": "35.4%" },
+  { "id": "5.19", "left": "84.66%", "top": "35.4%" },
+  { "id": "5.20", "left": "85.63%", "top": "35.4%" },
+  { "id": "5.21", "left": "92.95%", "top": "35.4%" },
+  { "id": "5.22", "left": "6.52%", "top": "50.3%" },
+  { "id": "5.23", "left": "13.82%", "top": "50.3%" },
+  { "id": "5.24", "left": "14.76%", "top": "50.3%" },
+  { "id": "5.25", "left": "22.19%", "top": "50.3%" },
+  { "id": "5.26", "left": "23.07%", "top": "50.3%" },
+  { "id": "5.27", "left": "30.44%", "top": "50.3%" },
+  { "id": "5.28", "left": "31.40%", "top": "50.3%" },
+  { "id": "5.29", "left": "38.77%", "top": "50.3%" },
+  { "id": "5.30", "left": "39.67%", "top": "50.3%" },
+  { "id": "5.31", "left": "46.91%", "top": "50.3%" },
+  { "id": "5.32", "left": "51.41%", "top": "50.3%" },
+  { "id": "5.33", "left": "52.37%", "top": "50.3%" },
+  { "id": "5.34", "left": "59.67%", "top": "50.3%" },
+  { "id": "5.35", "left": "60.66%", "top": "50.3%" },
+  { "id": "5.36", "left": "68.02%", "top": "50.3%" },
+  { "id": "5.37", "left": "68.90%", "top": "50.3%" },
+  { "id": "5.38", "left": "76.36%", "top": "50.3%" },
+  { "id": "5.39", "left": "77.21%", "top": "50.3%" },
+  { "id": "5.40", "left": "84.54%", "top": "50.3%" },
+  { "id": "5.41", "left": "85.50%", "top": "50.3%" },
+  { "id": "5.42", "left": "92.89%", "top": "50.3%" },
+  { "id": "5.43", "left": "6.45%", "top": "71.3%" },
+  { "id": "5.44", "left": "13.89%", "top": "71.3%" },
+  { "id": "5.45", "left": "14.85%", "top": "71.3%" },
+  { "id": "5.46", "left": "22.19%", "top": "71.3%" },
+  { "id": "5.47", "left": "23.09%", "top": "71.3%" },
+  { "id": "5.48", "left": "30.48%", "top": "71.3%" },
+  { "id": "5.49", "left": "31.38%", "top": "71.3%" },
+  { "id": "5.50", "left": "38.75%", "top": "71.3%" },
+  { "id": "5.51", "left": "39.65%", "top": "71.3%" },
+  { "id": "5.52", "left": "47.10%", "top": "71.3%" },
+  { "id": "5.53", "left": "51.51%", "top": "71.3%" },
+  { "id": "5.54", "left": "52.46%", "top": "71.3%" },
+  { "id": "5.55", "left": "59.72%", "top": "71.3%" },
+  { "id": "5.56", "left": "60.72%", "top": "71.3%" },
+  { "id": "5.57", "left": "68.07%", "top": "71.3%" },
+  { "id": "5.58", "left": "68.97%", "top": "71.3%" },
+  { "id": "5.59", "left": "76.36%", "top": "71.3%" },
+  { "id": "5.60", "left": "77.28%", "top": "71.3%" },
+  { "id": "5.61", "left": "84.62%", "top": "71.3%" },
+  { "id": "5.62", "left": "85.50%", "top": "71.3%" },
+  { "id": "5.63", "left": "92.89%", "top": "71.3%" },
+  { "id": "5.64", "left": "30.80%", "top": "82.9%" },
+  { "id": "5.65", "left": "51.96%", "top": "85.44%" },
+  { "id": "5.66", "left": "76.75%", "top": "85.63%" }
+    ];
+
     let cameras = [];
 
     const ARCHIVE_MIN = new Date('2000-01-01').getTime();
@@ -521,6 +606,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Функция для генерации пожарных щитов
+    function buildFireShields() {
+        const existing = els.mapLayer.querySelectorAll('.fire-shield-marker');
+        existing.forEach(n => n.remove());
+
+        fireShieldsData.forEach(shield => {
+            const marker = document.createElement('div');
+            marker.className = 'fire-shield-marker';
+            marker.setAttribute('data-id', shield.id);
+            marker.style.left = shield.left;
+            marker.style.top = shield.top;
+
+            // При клике можно вывести уведомление (по желанию)
+            marker.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                flashTemporary(`Указатель: ${shield.id}`, 2000);
+            });
+
+            els.mapLayer.appendChild(marker);
+        });
+    }
+
     function buildCameraButtons() {
         const existing = els.mapLayer.querySelectorAll('.camera-btn');
         existing.forEach(n => n.remove());
@@ -537,10 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', (ev) => {
                 ev.stopPropagation();
                 
-                // --- ДОБАВЛЕННАЯ ЛОГИКА ПОДСВЕТКИ ---
-                // Убираем подсветку со всех других кнопок
                 els.mapLayer.querySelectorAll('.camera-btn').forEach(b => b.classList.remove('active-selected'));
-                // Добавляем подсветку на ту, по которой кликнули
                 btn.classList.add('active-selected');
                 
                 setActiveCam(cam);
@@ -578,6 +682,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             buildCameraButtons();
+            buildFireShields(); // Вызываем отрисовку щитов
+            
         } catch (error) {
             console.error('Ошибка загрузки камер:', error);
             flashTemporary('Не удалось загрузить список камер', 3000);
