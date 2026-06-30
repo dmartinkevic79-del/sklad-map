@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOFRINOKBT - Control Panel v7.4 Premium</title>
+    <title>SOFRINOKBT - Control Panel v7.5 Premium</title>
 
     <link rel="icon" type="image/png" href="favicon.png">
     
@@ -266,72 +266,39 @@
 document.addEventListener('DOMContentLoaded', () => {
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwNq6J8FQHy0wlHmZXs0WXCgPd3MkCU0kgpvnau79r3CoKkhBvXWlOcJydtBHUtVeNs/exec';
     const fireShieldsData = [
-        { "id": "5.1", "left": "6.52%", "top": "35.4%" },
-        { "id": "5.2", "left": "13.91%", "top": "35.4%" },
-        { "id": "5.3", "left": "14.76%", "top": "35.4%" },
-        { "id": "5.4", "left": "22.15%", "top": "35.4%" },
-        { "id": "5.5", "left": "23.07%", "top": "35.4%" },
-        { "id": "5.6", "left": "30.48%", "top": "35.4%" },
-        { "id": "5.7", "left": "31.45%", "top": "35.4%" },
-        { "id": "5.8", "left": "38.75%", "top": "35.4%" },
-        { "id": "5.9", "left": "39.65%", "top": "35.4%" },
-        { "id": "5.10", "left": "46.95%", "top": "35.4%" },
-        { "id": "5.11", "left": "51.47%", "top": "35.4%" },
-        { "id": "5.12", "left": "52.41%", "top": "35.4%" },
-        { "id": "5.13", "left": "59.76%", "top": "35.4%" },
-        { "id": "5.14", "left": "60.68%", "top": "35.4%" },
-        { "id": "5.15", "left": "68.09%", "top": "35.4%" },
-        { "id": "5.16", "left": "69.01%", "top": "35.4%" },
-        { "id": "5.17", "left": "76.33%", "top": "35.4%" },
-        { "id": "5.18", "left": "77.30%", "top": "35.4%" },
-        { "id": "5.19", "left": "84.66%", "top": "35.4%" },
-        { "id": "5.20", "left": "85.63%", "top": "35.4%" },
-        { "id": "5.21", "left": "92.95%", "top": "35.4%" },
-        { "id": "5.22", "left": "6.52%", "top": "50.3%" },
-        { "id": "5.23", "left": "13.82%", "top": "50.3%" },
-        { "id": "5.24", "left": "14.76%", "top": "50.3%" },
-        { "id": "5.25", "left": "22.19%", "top": "50.3%" },
-        { "id": "5.26", "left": "23.07%", "top": "50.3%" },
-        { "id": "5.27", "left": "30.44%", "top": "50.3%" },
-        { "id": "5.28", "left": "31.40%", "top": "50.3%" },
-        { "id": "5.29", "left": "38.77%", "top": "50.3%" },
-        { "id": "5.30", "left": "39.67%", "top": "50.3%" },
-        { "id": "5.31", "left": "46.91%", "top": "50.3%" },
-        { "id": "5.32", "left": "51.41%", "top": "50.3%" },
-        { "id": "5.33", "left": "52.37%", "top": "50.3%" },
-        { "id": "5.34", "left": "59.67%", "top": "50.3%" },
-        { "id": "5.35", "left": "60.66%", "top": "50.3%" },
-        { "id": "5.36", "left": "68.02%", "top": "50.3%" },
-        { "id": "5.37", "left": "68.90%", "top": "50.3%" },
-        { "id": "5.38", "left": "76.36%", "top": "50.3%" },
-        { "id": "5.39", "left": "77.21%", "top": "50.3%" },
-        { "id": "5.40", "left": "84.54%", "top": "50.3%" },
-        { "id": "5.41", "left": "85.50%", "top": "50.3%" },
-        { "id": "5.42", "left": "92.89%", "top": "50.3%" },
-        { "id": "5.43", "left": "6.45%", "top": "71.3%" },
-        { "id": "5.44", "left": "13.89%", "top": "71.3%" },
-        { "id": "5.45", "left": "14.85%", "top": "71.3%" },
-        { "id": "5.46", "left": "22.19%", "top": "71.3%" },
-        { "id": "5.47", "left": "23.09%", "top": "71.3%" },
-        { "id": "5.48", "left": "30.48%", "top": "71.3%" },
-        { "id": "5.49", "left": "31.38%", "top": "71.3%" },
-        { "id": "5.50", "left": "38.75%", "top": "71.3%" },
-        { "id": "5.51", "left": "39.65%", "top": "71.3%" },
-        { "id": "5.52", "left": "47.10%", "top": "71.3%" },
-        { "id": "5.53", "left": "51.51%", "top": "71.3%" },
-        { "id": "5.54", "left": "52.46%", "top": "71.3%" },
-        { "id": "5.55", "left": "59.72%", "top": "71.3%" },
-        { "id": "5.56", "left": "60.72%", "top": "71.3%" },
-        { "id": "5.57", "left": "68.07%", "top": "71.3%" },
-        { "id": "5.58", "left": "68.97%", "top": "71.3%" },
-        { "id": "5.59", "left": "76.36%", "top": "71.3%" },
-        { "id": "5.60", "left": "77.28%", "top": "71.3%" },
-        { "id": "5.61", "left": "84.62%", "top": "71.3%" },
-        { "id": "5.62", "left": "85.50%", "top": "71.3%" },
-        { "id": "5.63", "left": "92.89%", "top": "71.3%" },
-        { "id": "5.64", "left": "30.80%", "top": "82.9%" },
-        { "id": "5.65", "left": "51.96%", "top": "82.9%" },
-        { "id": "5.66", "left": "76.75%", "top": "82.9%" }
+        { "id": "5.1", "left": "6.52%", "top": "35.4%" }, { "id": "5.2", "left": "13.91%", "top": "35.4%" },
+        { "id": "5.3", "left": "14.76%", "top": "35.4%" }, { "id": "5.4", "left": "22.15%", "top": "35.4%" },
+        { "id": "5.5", "left": "23.07%", "top": "35.4%" }, { "id": "5.6", "left": "30.48%", "top": "35.4%" },
+        { "id": "5.7", "left": "31.45%", "top": "35.4%" }, { "id": "5.8", "left": "38.75%", "top": "35.4%" },
+        { "id": "5.9", "left": "39.65%", "top": "35.4%" }, { "id": "5.10", "left": "46.95%", "top": "35.4%" },
+        { "id": "5.11", "left": "51.47%", "top": "35.4%" }, { "id": "5.12", "left": "52.41%", "top": "35.4%" },
+        { "id": "5.13", "left": "59.76%", "top": "35.4%" }, { "id": "5.14", "left": "60.68%", "top": "35.4%" },
+        { "id": "5.15", "left": "68.09%", "top": "35.4%" }, { "id": "5.16", "left": "69.01%", "top": "35.4%" },
+        { "id": "5.17", "left": "76.33%", "top": "35.4%" }, { "id": "5.18", "left": "77.30%", "top": "35.4%" },
+        { "id": "5.19", "left": "84.66%", "top": "35.4%" }, { "id": "5.20", "left": "85.63%", "top": "35.4%" },
+        { "id": "5.21", "left": "92.95%", "top": "35.4%" }, { "id": "5.22", "left": "6.52%", "top": "50.3%" },
+        { "id": "5.23", "left": "13.82%", "top": "50.3%" }, { "id": "5.24", "left": "14.76%", "top": "50.3%" },
+        { "id": "5.25", "left": "22.19%", "top": "50.3%" }, { "id": "5.26", "left": "23.07%", "top": "50.3%" },
+        { "id": "5.27", "left": "30.44%", "top": "50.3%" }, { "id": "5.28", "left": "31.40%", "top": "50.3%" },
+        { "id": "5.29", "left": "38.77%", "top": "50.3%" }, { "id": "5.30", "left": "39.67%", "top": "50.3%" },
+        { "id": "5.31", "left": "46.91%", "top": "50.3%" }, { "id": "5.32", "left": "51.41%", "top": "50.3%" },
+        { "id": "5.33", "left": "52.37%", "top": "50.3%" }, { "id": "5.34", "left": "59.67%", "top": "50.3%" },
+        { "id": "5.35", "left": "60.66%", "top": "50.3%" }, { "id": "5.36", "left": "68.02%", "top": "50.3%" },
+        { "id": "5.37", "left": "68.90%", "top": "50.3%" }, { "id": "5.38", "left": "76.36%", "top": "50.3%" },
+        { "id": "5.39", "left": "77.21%", "top": "50.3%" }, { "id": "5.40", "left": "84.54%", "top": "50.3%" },
+        { "id": "5.41", "left": "85.50%", "top": "50.3%" }, { "id": "5.42", "left": "92.89%", "top": "50.3%" },
+        { "id": "5.43", "left": "6.45%", "top": "71.3%" }, { "id": "5.44", "left": "13.89%", "top": "71.3%" },
+        { "id": "5.45", "left": "14.85%", "top": "71.3%" }, { "id": "5.46", "left": "22.19%", "top": "71.3%" },
+        { "id": "5.47", "left": "23.09%", "top": "71.3%" }, { "id": "5.48", "left": "30.48%", "top": "71.3%" },
+        { "id": "5.49", "left": "31.38%", "top": "71.3%" }, { "id": "5.50", "left": "38.75%", "top": "71.3%" },
+        { "id": "5.51", "left": "39.65%", "top": "71.3%" }, { "id": "5.52", "left": "47.10%", "top": "71.3%" },
+        { "id": "5.53", "left": "51.51%", "top": "71.3%" }, { "id": "5.54", "left": "52.46%", "top": "71.3%" },
+        { "id": "5.55", "left": "59.72%", "top": "71.3%" }, { "id": "5.56", "left": "60.72%", "top": "71.3%" },
+        { "id": "5.57", "left": "68.07%", "top": "71.3%" }, { "id": "5.58", "left": "68.97%", "top": "71.3%" },
+        { "id": "5.59", "left": "76.36%", "top": "71.3%" }, { "id": "5.60", "left": "77.28%", "top": "71.3%" },
+        { "id": "5.61", "left": "84.62%", "top": "71.3%" }, { "id": "5.62", "left": "85.50%", "top": "71.3%" },
+        { "id": "5.63", "left": "92.89%", "top": "71.3%" }, { "id": "5.64", "left": "30.80%", "top": "82.9%" },
+        { "id": "5.65", "left": "51.96%", "top": "82.9%" }, { "id": "5.66", "left": "76.75%", "top": "82.9%" }
     ];
     let cameras = [];
     const ARCHIVE_MIN = new Date('2000-01-01').getTime();
@@ -340,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMs = Date.now();
     let timer = null;
     let activeCam = null;
+    
     const els = {
         smartInput: document.getElementById('smart-paste'),
         dateInput: document.getElementById('master-date'),
@@ -354,18 +322,35 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingOverlay: document.getElementById('loading-overlay')
     };
 
-    const panzoom = Panzoom(els.wrapper, { maxScale: 5, minScale: 1, startScale: 1, step: 0.2, contain: 'outside' });
-    document.getElementById('viewport').addEventListener('wheel', panzoom.zoomWithWheel);
-
-    const mapImage = els.mapLayer.querySelector('.map-img');
-    if (mapImage) {
-        mapImage.addEventListener('load', () => panzoom.reset());
-        if (mapImage.complete) panzoom.reset();
-    }
-
     const today = new Date();
     today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
     els.dateInput.value = today.toISOString().slice(0, 10);
+
+    // --- ИСПРАВЛЕНИЕ: БЕЗОПАСНАЯ ИНИЦИАЛИЗАЦИЯ МАСШТАБА ---
+    let panzoom;
+    function initMapZoom() {
+        if (typeof Panzoom === 'undefined') {
+            console.warn('Библиотека Panzoom недоступна');
+            return;
+        }
+        if (panzoom) return; 
+        try {
+            panzoom = Panzoom(els.wrapper, { maxScale: 5, minScale: 1, startScale: 1, step: 0.2, contain: 'outside' });
+            document.getElementById('viewport').addEventListener('wheel', panzoom.zoomWithWheel);
+            panzoom.reset();
+        } catch (e) {
+            console.error('Ошибка инициализации Panzoom:', e);
+        }
+    }
+
+    const mapImage = els.mapLayer.querySelector('.map-img');
+    if (mapImage) {
+        if (mapImage.complete && mapImage.naturalHeight > 0) {
+            initMapZoom();
+        } else {
+            mapImage.addEventListener('load', initMapZoom);
+        }
+    }
 
     function setStatus(state, text) {
         els.statusText.textContent = text;
@@ -436,8 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- ФИКС 2: ПРИВЯЗКА КАЛЕНДАРЯ ---
-    // Если пользователь меняет дату в календаре, скрипт принудительно обновляет таймлайн
     els.dateInput.addEventListener('change', () => {
         if (els.smartInput.value.replace(/\D/g, '').length >= 4) {
             els.smartInput.dispatchEvent(new Event('input'));
@@ -461,7 +444,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const s = val.length >= 6 ? Number(val.substring(4, 6)) : 0;
             
             if (h <= 23 && m <= 59 && s <= 59) {
-                // Извлекаем точную дату из календаря без влияния часовых поясов
                 const dVal = els.dateInput.value;
                 let dateObj = new Date();
                 if (dVal) {
@@ -518,13 +500,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.altKey && (e.key === 'r' || e.key === 'R')) setLiveMode();
     });
 
-    // --- ФИКС 1: УМНЫЙ СБОРЩИК ВРЕМЕНИ ДЛЯ CTRL+V ---
+    // Умная вставка времени по Ctrl+V
     document.addEventListener('paste', (event) => {
         if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-        
         const pastedText = (event.clipboardData || window.clipboardData).getData('text').trim();
-        
-        // Попытка №1: Ищем явное время с разделителями (например, 14:30 или 14.30.00)
         const timeMatch = pastedText.match(/([01]?\d|2[0-3])[:\.\-]([0-5]\d)(?:[:\.\-]([0-5]\d))?/);
         let digitsOnly = '';
         
@@ -534,7 +513,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let s = timeMatch[3] || '00';
             digitsOnly = h + m + s;
         } else {
-            // Попытка №2: Если в тексте нет разделителей, но есть голые цифры (1430)
             digitsOnly = pastedText.replace(/\D/g, '');
         }
 
@@ -542,11 +520,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = digitsOnly.substring(0, 6);
             const h = Number(val.substring(0, 2));
             const m = Number(val.substring(2, 4));
-            
-            // Если извлеченные цифры реально похожи на часы и минуты
             if (h <= 23 && m <= 59) {
                 els.smartInput.value = val;
-                // Запускаем штатный форматировщик
                 els.smartInput.dispatchEvent(new Event('input'));
                 flashTemporary(`Время обновлено`, 2000);
             }
