@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOFRINOKBT - Control Panel v7.3 Premium</title>
+    <title>SOFRINOKBT - Control Panel v7.4 Premium</title>
 
     <link rel="icon" type="image/png" href="favicon.png">
     
@@ -125,7 +125,7 @@
         .camera-btn {
             position: absolute;
             width: 12px; height: 12px; padding: 0;
-            background: rgba(20, 22, 24, 0); border: 1px solid rgba(197, 159, 89, 0);
+            background: rgba(20, 22, 24, 0.6); border: 1px solid rgba(197, 160, 89, 0.4);
             border-radius: 50%;
             cursor: pointer; transform: translate(-50%, -50%);
             z-index: 10; transition: all 0.2s ease; appearance: none;
@@ -363,7 +363,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mapImage.complete) panzoom.reset();
     }
 
-    // Жестко задаем сегодняшнюю дату по локальному времени компьютера
     const today = new Date();
     today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
     els.dateInput.value = today.toISOString().slice(0, 10);
@@ -437,15 +436,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- НОВАЯ ЛОГИКА ПОЛЯ ВВОДА (АВТО-ДВОЕТОЧИЯ И УСТАНОВКА ВРЕМЕНИ) ---
+    // --- ФИКС 2: ПРИВЯЗКА КАЛЕНДАРЯ ---
+    // Если пользователь меняет дату в календаре, скрипт принудительно обновляет таймлайн
+    els.dateInput.addEventListener('change', () => {
+        if (els.smartInput.value.replace(/\D/g, '').length >= 4) {
+            els.smartInput.dispatchEvent(new Event('input'));
+        }
+    });
+
     els.smartInput.addEventListener('input', (e) => {
-        // 1. Очищаем строку от всего, кроме цифр
         let val = e.target.value.replace(/\D/g, ''); 
-        
-        // 2. Обрезаем лишнее (максимум 6 цифр: ЧЧММСС)
         if (val.length > 6) val = val.substring(0, 6);
         
-        // 3. Форматируем обратно с двоеточиями
         let formatted = '';
         if (val.length > 0) formatted += val.substring(0, 2);
         if (val.length > 2) formatted += ':' + val.substring(2, 4);
@@ -453,16 +455,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         e.target.value = formatted;
 
-        // 4. Если ввели хотя бы 4 цифры (ЧЧ:ММ), применяем время
         if (val.length >= 4) {
             const h = Number(val.substring(0, 2));
             const m = Number(val.substring(2, 4));
             const s = val.length >= 6 ? Number(val.substring(4, 6)) : 0;
             
             if (h <= 23 && m <= 59 && s <= 59) {
-                const date = els.dateInput.valueAsDate ? new Date(els.dateInput.valueAsDate) : new Date();
-                date.setHours(h, m, s, 0);
-                setArchiveMode(date.getTime());
+                // Извлекаем точную дату из календаря без влияния часовых поясов
+                const dVal = els.dateInput.value;
+                let dateObj = new Date();
+                if (dVal) {
+                    const parts = dVal.split('-');
+                    dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                }
+                dateObj.setHours(h, m, s, 0);
+                setArchiveMode(dateObj.getTime());
             }
         }
     });
@@ -504,35 +511,45 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('reset-btn').addEventListener('click', () => setLiveMode());
     document.getElementById('play-btn').addEventListener('click', toggleTimer);
     
-    // --- ЗАЩИТА ГОРЯЧИХ КЛАВИШ ОТ СРАБАТЫВАНИЯ В ИНПУТАХ ---
     document.addEventListener('keydown', (e) => {
-        // Если курсор стоит в поле ввода даты или времени - отключаем перехват!
         if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-        
         if (e.shiftKey && e.key === 'ArrowLeft') adjustTime(-1);
         if (e.shiftKey && e.key === 'ArrowRight') adjustTime(1);
         if (e.altKey && (e.key === 'r' || e.key === 'R')) setLiveMode();
     });
 
-    // --- НОВАЯ, УМНАЯ ВСТАВКА (CTRL+V) СО ВСЕГО ЭКРАНА ---
+    // --- ФИКС 1: УМНЫЙ СБОРЩИК ВРЕМЕНИ ДЛЯ CTRL+V ---
     document.addEventListener('paste', (event) => {
-        // Игнорируем, если оператор уже сам встал курсором в текстовое поле
         if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
         
         const pastedText = (event.clipboardData || window.clipboardData).getData('text').trim();
         
-        // Регулярка: ищет от 4 до 6 цифр подряд, либо разделенные : . - или пробелом
-        if (/^([01]?\d|2[0-3])[:\.\-\s]?([0-5]\d)(?:[:\.\-\s]?([0-5]\d))?$/.test(pastedText)) {
-            // Очищаем вставку от мусора, оставляем только голые цифры
-            const digitsOnly = pastedText.replace(/\D/g, '');
+        // Попытка №1: Ищем явное время с разделителями (например, 14:30 или 14.30.00)
+        const timeMatch = pastedText.match(/([01]?\d|2[0-3])[:\.\-]([0-5]\d)(?:[:\.\-]([0-5]\d))?/);
+        let digitsOnly = '';
+        
+        if (timeMatch) {
+            let h = timeMatch[1].padStart(2, '0');
+            let m = timeMatch[2];
+            let s = timeMatch[3] || '00';
+            digitsOnly = h + m + s;
+        } else {
+            // Попытка №2: Если в тексте нет разделителей, но есть голые цифры (1430)
+            digitsOnly = pastedText.replace(/\D/g, '');
+        }
+
+        if (digitsOnly.length >= 4) {
+            const val = digitsOnly.substring(0, 6);
+            const h = Number(val.substring(0, 2));
+            const m = Number(val.substring(2, 4));
             
-            // Вставляем цифры в поле
-            els.smartInput.value = digitsOnly;
-            
-            // Искусственно запускаем событие 'input' — наш авто-форматер (выше)
-            // сам расставит двоеточия и обновит таймлайн видео!
-            els.smartInput.dispatchEvent(new Event('input'));
-            flashTemporary(`Скопировано: ${els.smartInput.value}`, 2000);
+            // Если извлеченные цифры реально похожи на часы и минуты
+            if (h <= 23 && m <= 59) {
+                els.smartInput.value = val;
+                // Запускаем штатный форматировщик
+                els.smartInput.dispatchEvent(new Event('input'));
+                flashTemporary(`Время обновлено`, 2000);
+            }
         }
     });
 
