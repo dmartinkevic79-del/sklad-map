@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOFRINOKBT - Control Panel v7.3 Premium</title>
+    <title>SOFRINOKBT - Control Panel v7.6 Stable</title>
 
     <link rel="icon" type="image/png" href="favicon.png">
     
@@ -30,8 +30,7 @@
         }
 
         .visually-hidden {
-            position: absolute;
-            width: 1px; height: 1px; padding: 0; margin: -1px; 
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; 
             overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
         }
 
@@ -103,7 +102,7 @@
             background: rgba(197, 160, 89, 0.02); min-width: 200px; height: 32px;
             display: flex; align-items: center; justify-content: center; 
             box-sizing: border-box; letter-spacing: 0.5px;
-            overflow: hidden; text-overflow: ellipsis;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
 
         .system-status { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; }
@@ -125,7 +124,7 @@
         .camera-btn {
             position: absolute;
             width: 12px; height: 12px; padding: 0;
-            background: rgba(20, 22, 24, 0); border: 1px solid rgba(197, 159, 89, 0);
+            background: rgba(20, 22, 24, 0.6); border: 1px solid rgba(197, 160, 89, 0.4);
             border-radius: 50%;
             cursor: pointer; transform: translate(-50%, -50%);
             z-index: 10; transition: all 0.2s ease; appearance: none;
@@ -265,74 +264,44 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwNq6J8FQHy0wlHmZXs0WXCgPd3MkCU0kgpvnau79r3CoKkhBvXWlOcJydtBHUtVeNs/exec';
+    
+    // Вшитая база щитов
     const fireShieldsData = [
-        { "id": "5.1", "left": "6.52%", "top": "35.4%" },
-        { "id": "5.2", "left": "13.91%", "top": "35.4%" },
-        { "id": "5.3", "left": "14.76%", "top": "35.4%" },
-        { "id": "5.4", "left": "22.15%", "top": "35.4%" },
-        { "id": "5.5", "left": "23.07%", "top": "35.4%" },
-        { "id": "5.6", "left": "30.48%", "top": "35.4%" },
-        { "id": "5.7", "left": "31.45%", "top": "35.4%" },
-        { "id": "5.8", "left": "38.75%", "top": "35.4%" },
-        { "id": "5.9", "left": "39.65%", "top": "35.4%" },
-        { "id": "5.10", "left": "46.95%", "top": "35.4%" },
-        { "id": "5.11", "left": "51.47%", "top": "35.4%" },
-        { "id": "5.12", "left": "52.41%", "top": "35.4%" },
-        { "id": "5.13", "left": "59.76%", "top": "35.4%" },
-        { "id": "5.14", "left": "60.68%", "top": "35.4%" },
-        { "id": "5.15", "left": "68.09%", "top": "35.4%" },
-        { "id": "5.16", "left": "69.01%", "top": "35.4%" },
-        { "id": "5.17", "left": "76.33%", "top": "35.4%" },
-        { "id": "5.18", "left": "77.30%", "top": "35.4%" },
-        { "id": "5.19", "left": "84.66%", "top": "35.4%" },
-        { "id": "5.20", "left": "85.63%", "top": "35.4%" },
-        { "id": "5.21", "left": "92.95%", "top": "35.4%" },
-        { "id": "5.22", "left": "6.52%", "top": "50.3%" },
-        { "id": "5.23", "left": "13.82%", "top": "50.3%" },
-        { "id": "5.24", "left": "14.76%", "top": "50.3%" },
-        { "id": "5.25", "left": "22.19%", "top": "50.3%" },
-        { "id": "5.26", "left": "23.07%", "top": "50.3%" },
-        { "id": "5.27", "left": "30.44%", "top": "50.3%" },
-        { "id": "5.28", "left": "31.40%", "top": "50.3%" },
-        { "id": "5.29", "left": "38.77%", "top": "50.3%" },
-        { "id": "5.30", "left": "39.67%", "top": "50.3%" },
-        { "id": "5.31", "left": "46.91%", "top": "50.3%" },
-        { "id": "5.32", "left": "51.41%", "top": "50.3%" },
-        { "id": "5.33", "left": "52.37%", "top": "50.3%" },
-        { "id": "5.34", "left": "59.67%", "top": "50.3%" },
-        { "id": "5.35", "left": "60.66%", "top": "50.3%" },
-        { "id": "5.36", "left": "68.02%", "top": "50.3%" },
-        { "id": "5.37", "left": "68.90%", "top": "50.3%" },
-        { "id": "5.38", "left": "76.36%", "top": "50.3%" },
-        { "id": "5.39", "left": "77.21%", "top": "50.3%" },
-        { "id": "5.40", "left": "84.54%", "top": "50.3%" },
-        { "id": "5.41", "left": "85.50%", "top": "50.3%" },
-        { "id": "5.42", "left": "92.89%", "top": "50.3%" },
-        { "id": "5.43", "left": "6.45%", "top": "71.3%" },
-        { "id": "5.44", "left": "13.89%", "top": "71.3%" },
-        { "id": "5.45", "left": "14.85%", "top": "71.3%" },
-        { "id": "5.46", "left": "22.19%", "top": "71.3%" },
-        { "id": "5.47", "left": "23.09%", "top": "71.3%" },
-        { "id": "5.48", "left": "30.48%", "top": "71.3%" },
-        { "id": "5.49", "left": "31.38%", "top": "71.3%" },
-        { "id": "5.50", "left": "38.75%", "top": "71.3%" },
-        { "id": "5.51", "left": "39.65%", "top": "71.3%" },
-        { "id": "5.52", "left": "47.10%", "top": "71.3%" },
-        { "id": "5.53", "left": "51.51%", "top": "71.3%" },
-        { "id": "5.54", "left": "52.46%", "top": "71.3%" },
-        { "id": "5.55", "left": "59.72%", "top": "71.3%" },
-        { "id": "5.56", "left": "60.72%", "top": "71.3%" },
-        { "id": "5.57", "left": "68.07%", "top": "71.3%" },
-        { "id": "5.58", "left": "68.97%", "top": "71.3%" },
-        { "id": "5.59", "left": "76.36%", "top": "71.3%" },
-        { "id": "5.60", "left": "77.28%", "top": "71.3%" },
-        { "id": "5.61", "left": "84.62%", "top": "71.3%" },
-        { "id": "5.62", "left": "85.50%", "top": "71.3%" },
-        { "id": "5.63", "left": "92.89%", "top": "71.3%" },
-        { "id": "5.64", "left": "30.80%", "top": "82.9%" },
-        { "id": "5.65", "left": "51.96%", "top": "82.9%" },
-        { "id": "5.66", "left": "76.75%", "top": "82.9%" }
+        { "id": "5.1", "left": "6.52%", "top": "35.4%" }, { "id": "5.2", "left": "13.91%", "top": "35.4%" },
+        { "id": "5.3", "left": "14.76%", "top": "35.4%" }, { "id": "5.4", "left": "22.15%", "top": "35.4%" },
+        { "id": "5.5", "left": "23.07%", "top": "35.4%" }, { "id": "5.6", "left": "30.48%", "top": "35.4%" },
+        { "id": "5.7", "left": "31.45%", "top": "35.4%" }, { "id": "5.8", "left": "38.75%", "top": "35.4%" },
+        { "id": "5.9", "left": "39.65%", "top": "35.4%" }, { "id": "5.10", "left": "46.95%", "top": "35.4%" },
+        { "id": "5.11", "left": "51.47%", "top": "35.4%" }, { "id": "5.12", "left": "52.41%", "top": "35.4%" },
+        { "id": "5.13", "left": "59.76%", "top": "35.4%" }, { "id": "5.14", "left": "60.68%", "top": "35.4%" },
+        { "id": "5.15", "left": "68.09%", "top": "35.4%" }, { "id": "5.16", "left": "69.01%", "top": "35.4%" },
+        { "id": "5.17", "left": "76.33%", "top": "35.4%" }, { "id": "5.18", "left": "77.30%", "top": "35.4%" },
+        { "id": "5.19", "left": "84.66%", "top": "35.4%" }, { "id": "5.20", "left": "85.63%", "top": "35.4%" },
+        { "id": "5.21", "left": "92.95%", "top": "35.4%" }, { "id": "5.22", "left": "6.52%", "top": "50.3%" },
+        { "id": "5.23", "left": "13.82%", "top": "50.3%" }, { "id": "5.24", "left": "14.76%", "top": "50.3%" },
+        { "id": "5.25", "left": "22.19%", "top": "50.3%" }, { "id": "5.26", "left": "23.07%", "top": "50.3%" },
+        { "id": "5.27", "left": "30.44%", "top": "50.3%" }, { "id": "5.28", "left": "31.40%", "top": "50.3%" },
+        { "id": "5.29", "left": "38.77%", "top": "50.3%" }, { "id": "5.30", "left": "39.67%", "top": "50.3%" },
+        { "id": "5.31", "left": "46.91%", "top": "50.3%" }, { "id": "5.32", "left": "51.41%", "top": "50.3%" },
+        { "id": "5.33", "left": "52.37%", "top": "50.3%" }, { "id": "5.34", "left": "59.67%", "top": "50.3%" },
+        { "id": "5.35", "left": "60.66%", "top": "50.3%" }, { "id": "5.36", "left": "68.02%", "top": "50.3%" },
+        { "id": "5.37", "left": "68.90%", "top": "50.3%" }, { "id": "5.38", "left": "76.36%", "top": "50.3%" },
+        { "id": "5.39", "left": "77.21%", "top": "50.3%" }, { "id": "5.40", "left": "84.54%", "top": "50.3%" },
+        { "id": "5.41", "left": "85.50%", "top": "50.3%" }, { "id": "5.42", "left": "92.89%", "top": "50.3%" },
+        { "id": "5.43", "left": "6.45%", "top": "71.3%" }, { "id": "5.44", "left": "13.89%", "top": "71.3%" },
+        { "id": "5.45", "left": "14.85%", "top": "71.3%" }, { "id": "5.46", "left": "22.19%", "top": "71.3%" },
+        { "id": "5.47", "left": "23.09%", "top": "71.3%" }, { "id": "5.48", "left": "30.48%", "top": "71.3%" },
+        { "id": "5.49", "left": "31.38%", "top": "71.3%" }, { "id": "5.50", "left": "38.75%", "top": "71.3%" },
+        { "id": "5.51", "left": "39.65%", "top": "71.3%" }, { "id": "5.52", "left": "47.10%", "top": "71.3%" },
+        { "id": "5.53", "left": "51.51%", "top": "71.3%" }, { "id": "5.54", "left": "52.46%", "top": "71.3%" },
+        { "id": "5.55", "left": "59.72%", "top": "71.3%" }, { "id": "5.56", "left": "60.72%", "top": "71.3%" },
+        { "id": "5.57", "left": "68.07%", "top": "71.3%" }, { "id": "5.58", "left": "68.97%", "top": "71.3%" },
+        { "id": "5.59", "left": "76.36%", "top": "71.3%" }, { "id": "5.60", "left": "77.28%", "top": "71.3%" },
+        { "id": "5.61", "left": "84.62%", "top": "71.3%" }, { "id": "5.62", "left": "85.50%", "top": "71.3%" },
+        { "id": "5.63", "left": "92.89%", "top": "71.3%" }, { "id": "5.64", "left": "30.80%", "top": "82.9%" },
+        { "id": "5.65", "left": "51.96%", "top": "82.9%" }, { "id": "5.66", "left": "76.75%", "top": "82.9%" }
     ];
+
     let cameras = [];
     const ARCHIVE_MIN = new Date('2000-01-01').getTime();
     const ARCHIVE_MAX = Date.now();
@@ -340,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMs = Date.now();
     let timer = null;
     let activeCam = null;
+    
     const els = {
         smartInput: document.getElementById('smart-paste'),
         dateInput: document.getElementById('master-date'),
@@ -354,6 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingOverlay: document.getElementById('loading-overlay')
     };
 
+    // БЛОК 1: ИНИЦИАЛИЗАЦИЯ КАРТЫ (Panzoom)
     const panzoom = Panzoom(els.wrapper, { maxScale: 5, minScale: 1, startScale: 1, step: 0.2, contain: 'outside' });
     document.getElementById('viewport').addEventListener('wheel', panzoom.zoomWithWheel);
 
@@ -363,11 +334,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mapImage.complete) panzoom.reset();
     }
 
-    // Жестко задаем сегодняшнюю дату по локальному времени компьютера
+    // БЛОК 2: ИНИЦИАЛИЗАЦИЯ ДАТЫ С УЧЕТОМ ЧАСОВОГО ПОЯСА
     const today = new Date();
     today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
     els.dateInput.value = today.toISOString().slice(0, 10);
 
+    // БЛОК 3: ЛОГИКА ОТОБРАЖЕНИЯ И ТАЙМЕРА
     function setStatus(state, text) {
         els.statusText.textContent = text;
         els.statusDot.className = `status-dot ${state}`;
@@ -392,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setLiveMode() {
         isLiveMode = true;
         if (timer) { clearInterval(timer); timer = null; }
-        document.getElementById('play-btn').classList.remove('active-mode');
+        els.playBtn.classList.remove('active-mode');
         els.playSvg.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`;
         currentMs = Date.now();
         updateDisplay();
@@ -408,11 +380,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isLiveMode) return;
         if (timer) {
             clearInterval(timer); timer = null;
-            document.getElementById('play-btn').classList.remove('active-mode');
+            els.playBtn.classList.remove('active-mode');
             els.playSvg.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`;
         } else {
             timer = setInterval(() => { currentMs = clampArchive(currentMs + 1000); updateDisplay(); }, 1000);
-            document.getElementById('play-btn').classList.add('active-mode');
+            els.playBtn.classList.add('active-mode');
             els.playSvg.innerHTML = `<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>`;
         }
     }
@@ -437,15 +409,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- НОВАЯ ЛОГИКА ПОЛЯ ВВОДА (АВТО-ДВОЕТОЧИЯ И УСТАНОВКА ВРЕМЕНИ) ---
+    // БЛОК 4: СИНХРОНИЗАЦИЯ ПОЛЕЙ ВВОДА ДАТЫ И ВРЕМЕНИ
+    els.dateInput.addEventListener('change', () => {
+        if (els.smartInput.value.replace(/\D/g, '').length >= 4) {
+            els.smartInput.dispatchEvent(new Event('input'));
+        }
+    });
+
     els.smartInput.addEventListener('input', (e) => {
-        // 1. Очищаем строку от всего, кроме цифр
+        if (timer) {
+            clearInterval(timer); timer = null;
+            els.playBtn.classList.remove('active-mode');
+            els.playSvg.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`;
+        }
+
         let val = e.target.value.replace(/\D/g, ''); 
-        
-        // 2. Обрезаем лишнее (максимум 6 цифр: ЧЧММСС)
         if (val.length > 6) val = val.substring(0, 6);
         
-        // 3. Форматируем обратно с двоеточиями
         let formatted = '';
         if (val.length > 0) formatted += val.substring(0, 2);
         if (val.length > 2) formatted += ':' + val.substring(2, 4);
@@ -453,20 +433,25 @@ document.addEventListener('DOMContentLoaded', () => {
         
         e.target.value = formatted;
 
-        // 4. Если ввели хотя бы 4 цифры (ЧЧ:ММ), применяем время
         if (val.length >= 4) {
             const h = Number(val.substring(0, 2));
             const m = Number(val.substring(2, 4));
             const s = val.length >= 6 ? Number(val.substring(4, 6)) : 0;
             
             if (h <= 23 && m <= 59 && s <= 59) {
-                const date = els.dateInput.valueAsDate ? new Date(els.dateInput.valueAsDate) : new Date();
-                date.setHours(h, m, s, 0);
-                setArchiveMode(date.getTime());
+                const dVal = els.dateInput.value;
+                let dateObj = new Date();
+                if (dVal) {
+                    const parts = dVal.split('-');
+                    dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                }
+                dateObj.setHours(h, m, s, 0);
+                setArchiveMode(dateObj.getTime());
             }
         }
     });
 
+    // БЛОК 5: УВЕДОМЛЕНИЯ И СОБЫТИЯ КНОПОК
     function setActiveCam(cam) {
         activeCam = cam;
         const camText = document.getElementById('active-cam-text');
@@ -504,38 +489,43 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('reset-btn').addEventListener('click', () => setLiveMode());
     document.getElementById('play-btn').addEventListener('click', toggleTimer);
     
-    // --- ЗАЩИТА ГОРЯЧИХ КЛАВИШ ОТ СРАБАТЫВАНИЯ В ИНПУТАХ ---
+    // БЛОК 6: ПЕРЕХВАТЧИК ГЛОБАЛЬНЫХ КЛАВИШ И ВСТАВКИ
     document.addEventListener('keydown', (e) => {
-        // Если курсор стоит в поле ввода даты или времени - отключаем перехват!
         if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-        
         if (e.shiftKey && e.key === 'ArrowLeft') adjustTime(-1);
         if (e.shiftKey && e.key === 'ArrowRight') adjustTime(1);
         if (e.altKey && (e.key === 'r' || e.key === 'R')) setLiveMode();
     });
 
-    // --- НОВАЯ, УМНАЯ ВСТАВКА (CTRL+V) СО ВСЕГО ЭКРАНА ---
     document.addEventListener('paste', (event) => {
-        // Игнорируем, если оператор уже сам встал курсором в текстовое поле
         if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-        
         const pastedText = (event.clipboardData || window.clipboardData).getData('text').trim();
         
-        // Регулярка: ищет от 4 до 6 цифр подряд, либо разделенные : . - или пробелом
-        if (/^([01]?\d|2[0-3])[:\.\-\s]?([0-5]\d)(?:[:\.\-\s]?([0-5]\d))?$/.test(pastedText)) {
-            // Очищаем вставку от мусора, оставляем только голые цифры
-            const digitsOnly = pastedText.replace(/\D/g, '');
-            
-            // Вставляем цифры в поле
-            els.smartInput.value = digitsOnly;
-            
-            // Искусственно запускаем событие 'input' — наш авто-форматер (выше)
-            // сам расставит двоеточия и обновит таймлайн видео!
-            els.smartInput.dispatchEvent(new Event('input'));
-            flashTemporary(`Скопировано: ${els.smartInput.value}`, 2000);
+        const timeMatch = pastedText.match(/([01]?\d|2[0-3])[:\.\-\s]?([0-5]\d)(?:[:\.\-\s]?([0-5]\d))?/);
+        let digitsOnly = '';
+        
+        if (timeMatch) {
+            let h = timeMatch[1].padStart(2, '0');
+            let m = timeMatch[2];
+            let s = timeMatch[3] || '00';
+            digitsOnly = h + m + s;
+        } else {
+            digitsOnly = pastedText.replace(/\D/g, '');
+        }
+
+        if (digitsOnly.length >= 4) {
+            const val = digitsOnly.substring(0, 6);
+            const h = Number(val.substring(0, 2));
+            const m = Number(val.substring(2, 4));
+            if (h <= 23 && m <= 59) {
+                els.smartInput.value = val;
+                els.smartInput.dispatchEvent(new Event('input'));
+                flashTemporary(`Время обновлено`, 2000);
+            }
         }
     });
 
+    // БЛОК 7: ГЕНЕРАЦИЯ ЭЛЕМЕНТОВ НА КАРТЕ
     function buildFireShields() {
         fireShieldsData.forEach(shield => {
             const marker = document.createElement('div');
@@ -568,6 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // БЛОК 8: СБОРКА И ЗАПУСК (FETCH)
     async function init() {
         try {
             setStatus('loading', 'Синхронизация...');
@@ -586,6 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cam.url = cam.url.trim();
                 return true;
             });
+            
             buildCameraButtons();
             buildFireShields();
             setStatus('online', `Камер: ${cameras.length}`);
