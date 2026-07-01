@@ -118,17 +118,7 @@
 
         .map-viewport { width: 100vw; height: 100vh; box-sizing: border-box; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         .map-container { position: relative; display: inline-block; width: 100vw; height: auto; transition: cursor 0.2s ease; padding: 120px 40px 60px 40px; box-sizing: border-box; }
-       #map-layer { 
-    position: relative; 
-    display: block; 
-    width: 100%; 
-    min-width: 1200px;  /* Минимальная ширина, чтобы было на что опираться */
-    min-height: 800px;  /* Жестко задаем высоту, даже если картинки нет */
-    height: auto; 
-    background: #111;   /* Темно-серый фон вместо черного, чтобы видеть границы */
-    border-radius: 6px; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
-}
+        #map-layer { position: relative; display: block; width: 100%; height: auto; background: #000; border-radius: 6px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
         .map-img { display: block; width: 100%; height: auto; opacity: 0.8; pointer-events: none; border-radius: 6px; }
 
         .camera-btn {
@@ -262,7 +252,7 @@
 <main class="map-viewport" id="viewport">
     <div class="map-container" id="wrapper">
         <div id="map-layer">
-            <<img src="https://raw.githubusercontent.com/dmartinkevic79-del/sklad-map/main/Sklad.png" class="map-img" alt="Схема склада">>
+            <img src="Sklad.png" class="map-img" alt="Схема склада">
         </div>
     </div>
 </main>
