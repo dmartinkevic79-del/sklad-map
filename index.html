@@ -490,11 +490,55 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('play-btn').addEventListener('click', toggleTimer);
     
     // БЛОК 6: ПЕРЕХВАТЧИК ГЛОБАЛЬНЫХ КЛАВИШ И ВСТАВКИ
-    document.addEventListener('keydown', (e) => {
-        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-        if (e.shiftKey && e.key === 'ArrowLeft') adjustTime(-1);
-        if (e.shiftKey && e.key === 'ArrowRight') adjustTime(1);
-        if (e.altKey && (e.key === 'r' || e.key === 'R')) setLiveMode();
+document.addEventListener('keydown', (e) => {
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+    if (e.shiftKey && e.key === 'ArrowLeft') adjustTime(-1);
+    if (e.shiftKey && e.key === 'ArrowRight') adjustTime(1);
+    if (e.altKey && (e.key === 'r' || e.key === 'R')) setLiveMode();
+});
+
+document.addEventListener('paste', (event) => {
+    const isSmartInput = document.activeElement.id === 'smart-paste';
+    
+    // Игнорируем вставку, только если фокус находится в стороннем инпуте
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) && !isSmartInput) {
+        return;
+    }
+
+    const pastedText = (event.clipboardData || window.clipboardData).getData('text').trim();
+    
+    // Строгий поиск времени ЧЧ:ММ или ЧЧ:ММ:СС. Игнорирует даты и лишний текст.
+    const timeMatch = pastedText.match(/\b([01]?\d|2[0-3])[:\.\-]([0-5]\d)(?:[:\.\-]([0-5]\d))?\b/);
+    let digitsOnly = '';
+    
+    if (timeMatch) {
+        let h = timeMatch[1].padStart(2, '0');
+        let m = timeMatch[2];
+        let s = timeMatch[3] || '00'; // Автоматически добавляем секунды, если их не было
+        digitsOnly = h + m + s;
+    } else {
+        // Резервный вариант: забираем только цифры
+        digitsOnly = pastedText.replace(/\D/g, '');
+    }
+
+    if (digitsOnly.length >= 4) {
+        // Добиваем нулями строго до 6 цифр (ЧЧ:ММ:СС), чтобы устранить "кривую" вставку
+        digitsOnly = digitsOnly.padEnd(6, '0').substring(0, 6);
+        
+        const h = Number(digitsOnly.substring(0, 2));
+        const m = Number(digitsOnly.substring(2, 4));
+        
+        if (h <= 23 && m <= 59) {
+            if (isSmartInput) {
+                event.preventDefault(); // Блокируем дефолтную вставку браузера в само поле
+            }
+            
+            els.smartInput.value = digitsOnly;
+            els.smartInput.dispatchEvent(new Event('input'));
+            flashTemporary(`Время обновлено`, 2000);
+        }
+    }
+});
     });
 
     document.addEventListener('paste', (event) => {
