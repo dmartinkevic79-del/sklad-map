@@ -1,7 +1,7 @@
 {
   "name": "SOFRINOKBT Control Panel",
   "short_name": "Control Panel",
-  "description": "Control Panel v7.6 Stable for SOFRINOKBT",
+  "description": "Control Panel v7.7 Stable for SOFRINOKBT",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0a0b0c",
