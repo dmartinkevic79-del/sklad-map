@@ -1,0 +1,21 @@
+{
+  "name": "SOFRINOKBT Control Panel",
+  "short_name": "Control Panel",
+  "description": "Control Panel v7.6 Stable for SOFRINOKBT",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0b0c",
+  "theme_color": "#111315",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
